@@ -9,7 +9,8 @@ REGISTRATION OF LOCATION
 
 NOTE: YOU CANNOT MAKE REQUEST IF THERE IS NO REGISTRATION
 
-- x-location-code
+- x-location-code (required)
+  NOTE: must include at least one machine details
 - x-cpu-id
 - x-mac-address
 - x-mb-serial
