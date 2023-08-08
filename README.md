@@ -8,10 +8,9 @@ REGISTRATION OF LOCATION
 ### HEADER REQUEST FOR EACH REQUEST
 
 NOTE:
-
-1. You cannot make request if there is no Location Registration
-2. Location Code is required
-3. Must include at least (1) machine no. on each every request
+You cannot make request if there is no Location Registration
+Location Code is required
+Must include at least (1) machine no. on each every request
 
 - x-location-code (required)
 - x-cpu-id
