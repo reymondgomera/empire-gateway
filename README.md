@@ -5,9 +5,9 @@ REGISTRATION OF LOCATION
 - use this route `/empire/registration`
 - need bearer token/api key (coming from Portal) and attach to HEADER
 
-HEADER REQUEST FOR EACH REQUEST:
+### HEADER REQUEST FOR EACH REQUEST
 
-# YOU CANNOT MAKE REQUEST IF THERE IS NO REGISTRATION
+NOTE: YOU CANNOT MAKE REQUEST IF THERE IS NO REGISTRATION
 
 - x-location-code
 - x-cpu-id
@@ -15,7 +15,7 @@ HEADER REQUEST FOR EACH REQUEST:
 - x-mb-serial
 - x-hdd-serial
 
-# AUTHENTICATION
+### AUTHENTICATION
 
 - check if header exist
 - check if location and machine details exist
