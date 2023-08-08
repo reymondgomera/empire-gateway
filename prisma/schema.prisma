@@ -1,0 +1,246 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model MasterUser {
+  id           Int       @id(map: "PK_MasterUser") @unique @default(autoincrement())
+  userName     String    @unique @db.NVarChar(100)
+  password     String    @db.NVarChar(100)
+  email        String?   @unique @db.NVarChar(100)
+  firstName    String    @db.NVarChar(100)
+  lastName     String    @db.NVarChar(100)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now())
+  deletedAt    DateTime?
+  refreshToken String?   @db.NVarChar(100)
+
+  @@map("MasterUser")
+}
+
+model PortalUser {
+  id        String   @unique @db.NVarChar(50)
+  name      String?
+  username  String?
+  password  String?
+  email     String?
+  createdAt DateTime @db.DateTime
+  updatedAt DateTime @db.DateTime
+
+  @@map("PortalUser")
+}
+
+model Organization {
+  id        String   @unique @db.NVarChar(50)
+  code      String   @unique @db.NVarChar(30)
+  name      String   @db.NVarChar(50)
+  userId    String   @db.NVarChar(50)
+  isActive  Boolean
+  isDefault Boolean
+  createdAt DateTime @db.DateTime
+  updatedAt DateTime @db.DateTime
+
+  @@map("Organization")
+}
+
+model Business {
+  id             String   @unique @db.NVarChar(50)
+  code           String   @unique @db.NVarChar(30)
+  name           String   @db.NVarChar(50)
+  isActive       Boolean
+  isDefault      Boolean
+  status         String   @db.NVarChar(10)
+  organizationId String   @db.NVarChar(50)
+  createdAt      DateTime @db.DateTime
+  updatedAt      DateTime @db.DateTime
+
+  @@index([organizationId])
+  @@map("Business")
+}
+
+model Location {
+  id             String   @unique @db.NVarChar(50)
+  code           String   @unique @db.NVarChar(30)
+  name           String   @db.NVarChar(100)
+  isActive       Boolean
+  businessId     String   @db.NVarChar(50)
+  organizationId String   @db.NVarChar(50)
+  createdAt      DateTime @db.DateTime
+  updatedAt      DateTime @db.DateTime
+  bgLocationCode String   @default("")
+
+  @@index([businessId])
+  @@index([organizationId])
+  @@map("Location")
+}
+
+model RegistrationStatus {
+  id       String  @id(map: "PK_RegistrationStatus") @unique @default(uuid()) @db.NVarChar(30)
+  code     String  @unique @db.NVarChar(30)
+  name     String  @db.NVarChar(100)
+  isActive Boolean
+
+  registration Registration[] @relation("RegStatusToRegList")
+
+  @@map("RegistrationStatus")
+}
+
+model Registration {
+  locationCode String   @db.NVarChar(30)
+  cpuId        String   @db.NVarChar(100)
+  macAddress   String   @db.NVarChar(100)
+  mbSerial     String   @db.NVarChar(100)
+  hddSerial    String   @db.NVarChar(100)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+
+  statusId String             @default("whitelisted") @db.NVarChar(30)
+  status   RegistrationStatus @relation("RegStatusToRegList", fields: [statusId], references: [id], onDelete: Cascade)
+
+  @@unique([locationCode, cpuId, macAddress, mbSerial, hddSerial], map: "IDX_Inventory")
+  @@map("Registration")
+}
+
+model Inventory {
+  locationCode String  @db.NVarChar(30)
+  itemCode     String  @db.NVarChar(50)
+  qty          Decimal @db.Decimal(18, 2)
+  cost         Decimal @db.Decimal(18, 2)
+  price        Decimal @db.Decimal(18, 2)
+
+  @@unique([locationCode, itemCode], map: "IDX_Inventory")
+  @@unique([locationCode, itemCode], map: "UQ_Inventory")
+  @@map("Inventory")
+}
+
+model SalesDetails {
+  locationCode String   @db.NVarChar(30)
+  tranDate     DateTime @db.Date
+  tranCode     String   @db.NVarChar(20)
+  cashierCode  String   @db.NVarChar(50)
+  itemCode     String   @db.NVarChar(50)
+  qty          Decimal  @db.Decimal(18, 2)
+  total        Decimal  @db.Decimal(18, 2)
+
+  @@unique([locationCode, tranDate, tranCode, cashierCode, itemCode], map: "IDX_SalesDetails")
+  @@unique([locationCode, tranDate, tranCode, cashierCode, itemCode], map: "UQ_SalesDetails")
+  @@map("SalesDetails")
+}
+
+model ModTransferHeader {
+  locationCode   String            @db.NVarChar(50)
+  tran_ty        Int               @db.TinyInt
+  flocid_no      Int
+  tlocid_no      Int?
+  direct_yn      Boolean?
+  transitid_no   Int?
+  statid_no      Int?
+  doc_nb         String            @db.NVarChar(20)
+  doc_dt         DateTime?         @db.SmallDateTime
+  post_dt        DateTime?         @db.SmallDateTime
+  userid_no      Int?
+  pi_nm          String?           @db.NVarChar(50)
+  ship_dt        DateTime?         @db.SmallDateTime
+  shipid_no      Int?
+  shipagentid_no Int?
+  receipt_dt     DateTime?         @db.Date
+  locid_no       Int?
+  contact_nm     String?           @db.NVarChar(50)
+  phone_nb       String?           @db.NVarChar(20)
+  mobile_nb      String?           @db.NVarChar(20)
+  approverid_no  Int?
+  approvalid_no  Int?
+  createid_no    Int?
+  postid_no      Int?
+  actid_no       Int?
+  link_nb        String?           @db.NVarChar(50)
+  produce_yn     Boolean?
+  audit_yn       Boolean?
+  audit_dt       DateTime?         @db.SmallDateTime
+  year_tx        String?           @db.NVarChar(4)
+  ystatid_no     Int?
+  brtran_ty      Int?
+  remarks_tx     String?           @db.NVarChar(200)
+  sttrantyid_no  Int?
+  refid_no       Int?
+  details        ModStockDetails[] @relation("transfer")
+  isGet          Boolean           @default(false) @db.Bit()
+
+  @@unique([locationCode, doc_nb], map: "uq_InventoryTransferHeader")
+  @@map("ModTransferHeader")
+}
+
+model ModStockDetails {
+  locationCode  String            @db.NVarChar(50)
+  doc_nb        String            @db.NVarChar(20)
+  typeid_no     Int?
+  itemid_no     Int
+  item_cd       String?           @db.NVarChar(30)
+  item_nm       String?           @db.NVarChar(200)
+  locid_no      Int
+  qty_am        Decimal           @db.Decimal(18, 2)
+  uomid_no      Int?
+  cost_am       Decimal           @db.Decimal(18, 4)
+  tcost_am      Decimal           @db.Decimal(18, 4)
+  tax_yn        Boolean?
+  taxid_no      Int?
+  tax_am        Decimal?          @db.Decimal(18, 4)
+  disc_rt       Decimal?          @db.Decimal(18, 4)
+  disc_am       Decimal?          @db.Decimal(18, 4)
+  tran_am       Decimal?          @db.Decimal(18, 4)
+  qtypost_am    Decimal           @db.Decimal(18, 2)
+  lot_yn        Boolean
+  count_am      Decimal?          @db.Decimal(18, 2)
+  sourceid_no   Int
+  qtyprod_am    Decimal?          @db.Decimal(18, 2)
+  line_no       Int?
+  beginv_am     Decimal?          @db.Decimal(18, 2)
+  in_am         Decimal?          @db.Decimal(18, 2)
+  out_am        Decimal?          @db.Decimal(18, 2)
+  transfer_am   Decimal?          @db.Decimal(18, 2)
+  sold_am       Decimal?          @db.Decimal(18, 2)
+  production_am Decimal?          @db.Decimal(18, 2)
+  remarks_tx    String?           @db.NVarChar(200)
+  update_yn     Boolean?
+  recvdt_tx     String?           @db.NVarChar(100)
+  invdt_tx      String?           @db.NVarChar(100)
+  inv_nb        String?           @db.NVarChar(100)
+  header        ModTransferHeader @relation("transfer", fields: [locationCode, doc_nb], references: [locationCode, doc_nb], onDelete: Cascade)
+
+  @@unique([locationCode, doc_nb, itemid_no], map: "uq_InventoryStockDetails")
+  @@map("ModStockDetails")
+}
+
+model ModPosting {
+  locationCode String    @db.NVarChar(50)
+  line_no      Int
+  tran_ty      Int       @db.TinyInt
+  module_nm    String    @db.NVarChar(50)
+  source_nb    String    @db.NVarChar(20)
+  post_nb      String?   @db.NVarChar(20)
+  locid_no     Int
+  itemid_no    Int
+  qty_am       Decimal   @db.Decimal(18, 2)
+  brrecvd_am   Decimal?  @db.Decimal(18, 2)
+  uomid_no     Int?
+  serial_nb    String?   @db.NVarChar(20)
+  batch_nb     String?   @db.NVarChar(20)
+  lot_nb       String?   @db.NVarChar(20)
+  exp_dt       DateTime? @db.Date
+  postedid_no  Int
+  tran_dt      DateTime? @db.SmallDateTime
+  userid_no    Int?
+  count_am     Decimal?  @db.Decimal(18, 2)
+  variance_am  Decimal?  @db.Decimal(18, 2)
+  child_yn     Boolean?
+  year_tx      String?   @db.NVarChar(4)
+  recvdt_tx    String?   @db.NVarChar(100)
+  invdt_tx     String?   @db.NVarChar(100)
+  inv_nb       String?   @db.NVarChar(100)
+
+  @@unique([locationCode, locid_no, itemid_no], map: "uq_ModPosting")
+}
