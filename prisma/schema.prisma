@@ -35,15 +35,18 @@ model PortalUser {
 }
 
 model Organization {
-  id        String   @unique @db.NVarChar(50)
-  code      String   @unique @db.NVarChar(30)
-  name      String   @db.NVarChar(50)
-  userId    String   @db.NVarChar(50)
-  isActive  Boolean
-  isDefault Boolean
-  createdAt DateTime @db.DateTime
-  updatedAt DateTime @db.DateTime
+  id                 String     @unique @db.NVarChar(50)
+  code               String     @unique @db.NVarChar(30)
+  name               String     @db.NVarChar(50)
+  userId             String     @db.NVarChar(50)
+  isActive           Boolean
+  isDefault          Boolean
+  createdAt          DateTime   @db.DateTime
+  updatedAt          DateTime   @db.DateTime
+  business           Business[] @relation("OrganizationToBusiness")
+  bgOrganizationCode String     @default("")
 
+  @@unique([bgOrganizationCode])
   @@map("Organization")
 }
 
@@ -58,21 +61,30 @@ model Business {
   createdAt      DateTime @db.DateTime
   updatedAt      DateTime @db.DateTime
 
+  location     Location[]   @relation("BusinessToLocation")
+  organization Organization @relation("OrganizationToBusiness", fields: [organizationId], references: [id], onDelete: Cascade)
+
+  bgBusinessCode String @default("")
+
+  @@unique([bgBusinessCode])
   @@index([organizationId])
   @@map("Business")
 }
 
 model Location {
-  id             String   @unique @db.NVarChar(50)
-  code           String   @unique @db.NVarChar(30)
-  name           String   @db.NVarChar(100)
+  id             String      @unique @db.NVarChar(50)
+  code           String      @unique @db.NVarChar(30)
+  name           String      @db.NVarChar(100)
   isActive       Boolean
-  businessId     String   @db.NVarChar(50)
-  organizationId String   @db.NVarChar(50)
-  createdAt      DateTime @db.DateTime
-  updatedAt      DateTime @db.DateTime
-  bgLocationCode String   @default("")
+  businessId     String      @db.NVarChar(50)
+  business       Business    @relation("BusinessToLocation", fields: [businessId], references: [id], onDelete: Cascade)
+  organizationId String      @db.NVarChar(50)
+  createdAt      DateTime    @db.DateTime
+  updatedAt      DateTime    @db.DateTime
+  bgLocationCode String      @default("") @db.NVarChar(30)
+  inventory      Inventory[] @relation("LocationToInventory")
 
+  @@unique([bgLocationCode])
   @@index([businessId])
   @@index([organizationId])
   @@map("Location")
@@ -101,16 +113,17 @@ model Registration {
   statusId String             @default("whitelisted") @db.NVarChar(30)
   status   RegistrationStatus @relation("RegStatusToRegList", fields: [statusId], references: [id], onDelete: Cascade)
 
-  @@unique([locationCode, cpuId, macAddress, mbSerial, hddSerial], map: "IDX_Inventory")
+  @@unique([locationCode, cpuId, macAddress, mbSerial, hddSerial], map: "IDX_Registration")
   @@map("Registration")
 }
 
 model Inventory {
-  locationCode String  @db.NVarChar(30)
-  itemCode     String  @db.NVarChar(50)
-  qty          Decimal @db.Decimal(18, 2)
-  cost         Decimal @db.Decimal(18, 2)
-  price        Decimal @db.Decimal(18, 2)
+  locationCode String   @db.NVarChar(30)
+  itemCode     String   @db.NVarChar(50)
+  qty          Decimal  @db.Decimal(18, 2)
+  cost         Decimal  @db.Decimal(18, 2)
+  price        Decimal  @db.Decimal(18, 2)
+  location     Location @relation("LocationToInventory", fields: [locationCode], references: [bgLocationCode])
 
   @@unique([locationCode, itemCode], map: "IDX_Inventory")
   @@unique([locationCode, itemCode], map: "UQ_Inventory")

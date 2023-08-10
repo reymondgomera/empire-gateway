@@ -22,13 +22,18 @@ export class EmpireController {
     return this.empireService.postInventory(locationCode, data)
   }
 
+  @Get('inventory')
+  getInventory(@Headers('x-business-code') businessCode: string, @Headers('x-location-code') locationCode: string) {
+    return this.empireService.getInventoryData(businessCode, locationCode)
+  }
+
   @Post('transfer')
   postModTransfer(@Body() data: ModTransferDataDto) {
     return this.empireService.postModTransfer(data)
   }
 
   @Get('transfer')
-  getInventory(@Headers('x-location-code') locationCode: string, @Query() params: TransferQueryParamDto) {
+  getTransfer(@Headers('x-location-code') locationCode: string, @Query() params: TransferQueryParamDto) {
     return this.empireService.getTransferData(locationCode, params)
   }
 

@@ -15,10 +15,13 @@ import { ZodValidationPipe } from 'nestjs-zod'
 import { PrismaModule } from '@/modules/prisma/prisma.module'
 import { PortalModule } from '@/modules/portal/portal.module'
 import { EmpireModule } from '@/modules/empire/empire.module'
+import { config } from './common/config/config'
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      load: [config]
+    }),
     CacheModule.register({
       ttl: 5000 // 5 seconds
     }),

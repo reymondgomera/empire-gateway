@@ -1,5 +1,5 @@
 import { PrismaService } from '@/modules/prisma/prisma.service'
-import { InternalServerError, UnprocessableEntity } from '@/common/utils/custom-error'
+import { BadRequest, InternalServerError, NoRecordFound, UnprocessableEntity } from '@/common/utils/custom-error'
 import { Injectable } from '@nestjs/common'
 import { SalesParamDto, SalesDataDto, InventoryDataDto, ModTransferDataDto, TransferQueryParamDto, RegistrationLocationDto } from './dto'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
@@ -69,15 +69,54 @@ export class EmpireService {
     try {
       const { items } = data
 
-      await this.prisma.$transaction([
-        this.prisma.inventory.deleteMany({ where: { locationCode } }),
-        this.prisma.inventory.createMany({ data: items })
-      ])
+      await this.prisma.$transaction(async (db) => {
+        try {
+          await db.$executeRaw`DELETE FROM Inventory WHERE locationCode = ${locationCode}`
+        } catch (error) {
+          throw new UnprocessableEntity('Error deleting Inventory Data.')
+        }
+
+        try {
+          await db.inventory.createMany({ data: items })
+        } catch (error) {
+          throw new UnprocessableEntity('Error creating Inventory Data.')
+        }
+      })
 
       return { success: true }
     } catch (error) {
       if (error instanceof UnprocessableEntity) {
         throw new UnprocessableEntity(error)
+      }
+
+      throw new InternalServerError(error)
+    }
+  }
+
+  async getInventoryData(businessCode: string, locationCode: string) {
+    console.log('🚀 ~ file: empire.service.ts:97 ~ EmpireService ~ getInventoryData ~ businessCode:', businessCode)
+    if (!businessCode) {
+      throw new BadRequest({ message: '[HEADER] Business code not found.', code: 'H002' })
+      // return { message: '[HEADER] Business code not found.' }
+      // throw new Error('Business Code HEADER not found.')
+    }
+
+    try {
+      const businessData = await this.prisma.business.findUnique({
+        where: { bgBusinessCode: businessCode },
+        include: { location: { include: { inventory: true } } }
+      })
+
+      if (!businessData) {
+        throw new NoRecordFound()
+      }
+
+      const locationCodes = businessData.location.map((loc) => loc.bgLocationCode)
+
+      return { locationCodes, businessData }
+    } catch (error) {
+      if (error instanceof NoRecordFound) {
+        throw new NoRecordFound()
       }
 
       throw new InternalServerError(error)

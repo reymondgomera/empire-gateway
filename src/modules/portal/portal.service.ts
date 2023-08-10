@@ -1,5 +1,5 @@
 import { PrismaService } from '@/modules/prisma/prisma.service'
-import { AuthenticationError, InternalServerError, UnprocessableEntity } from '@/common/utils/custom-error'
+import { AuthenticationError, ForbiddenAccess, InternalServerError, UnprocessableEntity } from '@/common/utils/custom-error'
 import { HttpService } from '@nestjs/axios'
 import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { AxiosRequestConfig } from 'axios'
@@ -37,14 +37,12 @@ export class PortalService {
       }
 
       const { user, organization, business, location } = parseData.data
-      // console.log('🚀 -> PortalService -> create -> user:', user)
 
       await this.prisma.$transaction(async (db) => {
         try {
-          // await db.portalUser.deleteMany()
+          await db.portalUser.deleteMany()
           await db.portalUser.createMany({ data: user })
         } catch (error) {
-          console.log('🚀 -> PortalService -> awaitthis.prisma.$transaction -> error:', error)
           throw new UnprocessableEntity('Error saving User Portal Data.')
         }
 
@@ -207,9 +205,10 @@ export class PortalService {
     }
 
     if (locationData.statusId !== 'whitelisted') {
-      throw new AuthenticationError({
+      throw new ForbiddenAccess({
         message: 'Forbidden access! Please contact your provider.',
-        status: locationData.statusId
+        status: locationData.statusId,
+        code: 'BG101'
       })
     }
 

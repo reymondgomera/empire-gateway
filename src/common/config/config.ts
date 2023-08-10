@@ -38,5 +38,6 @@ export const config = (): Config => ({
     AT_SECRET: process.env.AT_SECRET || '',
     RT_SECRET: process.env.RT_SECRET || ''
   },
+  // NO AUTHORIZATION PAGE
   publicUrl: ['get-master', 'registration', 'validate-master', 'generate-api-key', 'validate-api-key']
 })

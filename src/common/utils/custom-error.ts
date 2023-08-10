@@ -12,6 +12,12 @@ export class BadRequest extends HttpException {
   }
 }
 
+export class NoRecordFound extends HttpException {
+  constructor(response?: string | Record<string, any>) {
+    super(response || 'No record found.', HttpStatus.BAD_REQUEST)
+  }
+}
+
 export class UnprocessableEntity extends HttpException {
   constructor(response?: string | Record<string, any>) {
     super(response || 'Unable to process request! Please check your data.', HttpStatus.UNPROCESSABLE_ENTITY)
@@ -21,5 +27,11 @@ export class UnprocessableEntity extends HttpException {
 export class InternalServerError extends HttpException {
   constructor(response?: string | Record<string, any> | unknown) {
     super(response || 'Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR)
+  }
+}
+
+export class ForbiddenAccess extends HttpException {
+  constructor(response?: string | Record<string, any>) {
+    super(response || 'Unable to process request! Please check your API Key & Data.', HttpStatus.FORBIDDEN)
   }
 }
