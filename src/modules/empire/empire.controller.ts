@@ -1,6 +1,14 @@
 import { Controller, Get, Post, Body, Query, Headers, Delete } from '@nestjs/common'
 import { EmpireService } from './empire.service'
-import { SalesParamDto, SalesDataDto, InventoryDataDto, ModTransferDataDto, TransferQueryParamDto, RegistrationLocationDto } from './dto'
+import {
+  SalesParamDto,
+  SalesDataDto,
+  InventoryDataDto,
+  ModTransferDataDto,
+  TransferQueryParamDto,
+  RegistrationLocationDto,
+  ReferenceDto
+} from './dto'
 
 @Controller('empire')
 export class EmpireController {
@@ -22,10 +30,15 @@ export class EmpireController {
     return this.empireService.postInventory(locationCode, data)
   }
 
-  @Get('inventory')
-  getInventory(@Headers('x-business-code') businessCode: string, @Headers('x-location-code') locationCode: string) {
-    return this.empireService.getInventoryData(businessCode, locationCode)
+  @Post('reference')
+  postReference(@Headers('x-business-code') businessCode: string, @Body() data: ReferenceDto) {
+    return this.empireService.postReference(businessCode, data)
   }
+
+  // @Get('inventory')
+  // getInventory(@Headers('x-business-code') businessCode: string, @Headers('x-location-code') locationCode: string) {
+  //   return this.empireService.getInventoryData(businessCode, locationCode)
+  // }
 
   @Post('transfer')
   postModTransfer(@Body() data: ModTransferDataDto) {

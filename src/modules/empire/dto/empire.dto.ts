@@ -51,6 +51,24 @@ export const InventoryDataSchema = z.object({
 
 export class InventoryDataDto extends createZodDto(InventoryDataSchema) {}
 
+export const ItemMasterSchema = z.object({
+  items: z.array(
+    z.object({
+      businessCode: z.string(),
+      itemCode: z.string(),
+      itemName: z.string(),
+      brand: z.string().nullish(),
+      category: z.string().nullish(),
+      generic: z.string().nullish(),
+      uom: z.string().nullish(),
+      cost: z.number().nullish(),
+      price: z.number().nullish()
+    })
+  )
+})
+
+export class ReferenceDto extends createZodDto(ItemMasterSchema) {}
+
 export const ModTransferHeaderDataSchema = z.object({
   transferHeader: z.array(
     z.object({

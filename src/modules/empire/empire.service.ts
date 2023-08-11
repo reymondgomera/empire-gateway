@@ -1,7 +1,15 @@
 import { PrismaService } from '@/modules/prisma/prisma.service'
 import { BadRequest, InternalServerError, NoRecordFound, UnprocessableEntity } from '@/common/utils/custom-error'
 import { Injectable } from '@nestjs/common'
-import { SalesParamDto, SalesDataDto, InventoryDataDto, ModTransferDataDto, TransferQueryParamDto, RegistrationLocationDto } from './dto'
+import {
+  SalesParamDto,
+  SalesDataDto,
+  InventoryDataDto,
+  ModTransferDataDto,
+  TransferQueryParamDto,
+  RegistrationLocationDto,
+  ReferenceDto
+} from './dto'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 
 @Injectable()
@@ -93,6 +101,40 @@ export class EmpireService {
     }
   }
 
+  async postReference(businessCode: string, data: ReferenceDto) {
+    if (!businessCode) {
+      throw new BadRequest({ message: '[HEADER] Business code not found.', code: 'H002' })
+      // return { message: '[HEADER] Business code not found.' }
+      // throw new Error('Business Code HEADER not found.')
+    }
+
+    try {
+      const { items } = data
+
+      await this.prisma.$transaction(async (db) => {
+        try {
+          await db.$executeRaw`DELETE FROM MasterItem WHERE businessCode = ${businessCode}`
+        } catch (error) {
+          throw new UnprocessableEntity('Error deleting Item Master Data.')
+        }
+
+        try {
+          await db.masterItem.createMany({ data: items })
+        } catch (error) {
+          throw new UnprocessableEntity('Error creating Master Data.')
+        }
+      })
+
+      return { success: true }
+    } catch (error) {
+      if (error instanceof UnprocessableEntity) {
+        throw new UnprocessableEntity(error)
+      }
+
+      throw new InternalServerError(error)
+    }
+  }
+
   async getInventoryData(businessCode: string, locationCode: string) {
     console.log('🚀 ~ file: empire.service.ts:97 ~ EmpireService ~ getInventoryData ~ businessCode:', businessCode)
     if (!businessCode) {
@@ -102,21 +144,31 @@ export class EmpireService {
     }
 
     try {
+      // const businessData = await this.prisma.business.findUnique({
+      //   where: { bgBusinessCode: businessCode },
+      //   include: { location: { include: { inventory: true } } }
+      // })
+
       const businessData = await this.prisma.business.findUnique({
         where: { bgBusinessCode: businessCode },
-        include: { location: { include: { inventory: true } } }
+        select: { location: { select: { bgLocationCode: true } } }
       })
 
       if (!businessData) {
-        throw new NoRecordFound()
+        throw new NoRecordFound({ message: 'No business code found.' })
       }
 
       const locationCodes = businessData.location.map((loc) => loc.bgLocationCode)
+      const inventory = await this.prisma.inventory.findMany({ where: { locationCode: { in: locationCodes } } })
 
-      return { locationCodes, businessData }
+      if (!inventory) {
+        throw new NoRecordFound({ message: 'No inventory data found.' })
+      }
+
+      return { inventory }
     } catch (error) {
       if (error instanceof NoRecordFound) {
-        throw new NoRecordFound()
+        throw new NoRecordFound({ message: error.message, code: 'H001' })
       }
 
       throw new InternalServerError(error)

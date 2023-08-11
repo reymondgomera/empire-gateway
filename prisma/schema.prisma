@@ -130,6 +130,21 @@ model Inventory {
   @@map("Inventory")
 }
 
+model MasterItem {
+  businessCode String   @db.NVarChar(30)
+  itemCode     String   @db.NVarChar(50)
+  itemName     String   @db.NVarChar(200)
+  brand        String?  @db.NVarChar(50)
+  category     String?  @db.NVarChar(50)
+  generic      String?  @db.NVarChar(50)
+  uom          String?  @db.NVarChar(50)
+  cost         Decimal? @db.Decimal(18, 2)
+  price        Decimal? @db.Decimal(18, 2)
+
+  @@unique([businessCode, itemCode], map: "IDX_MasterItem")
+  @@map("MasterItem")
+}
+
 model SalesDetails {
   locationCode String   @db.NVarChar(30)
   tranDate     DateTime @db.Date
