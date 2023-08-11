@@ -43,30 +43,27 @@ model Organization {
   isDefault          Boolean
   createdAt          DateTime   @db.DateTime
   updatedAt          DateTime   @db.DateTime
+  bgOrganizationCode String     @unique @default("")
   business           Business[] @relation("OrganizationToBusiness")
-  bgOrganizationCode String     @default("")
 
-  @@unique([bgOrganizationCode])
   @@map("Organization")
 }
 
 model Business {
-  id             String   @unique @db.NVarChar(50)
-  code           String   @unique @db.NVarChar(30)
-  name           String   @db.NVarChar(50)
+  id             String       @unique @db.NVarChar(50)
+  code           String       @unique @db.NVarChar(30)
+  name           String       @db.NVarChar(50)
   isActive       Boolean
   isDefault      Boolean
-  status         String   @db.NVarChar(10)
-  organizationId String   @db.NVarChar(50)
-  createdAt      DateTime @db.DateTime
-  updatedAt      DateTime @db.DateTime
+  status         String       @db.NVarChar(10)
+  organizationId String       @db.NVarChar(50)
+  createdAt      DateTime     @db.DateTime
+  updatedAt      DateTime     @db.DateTime
+  bgBusinessCode String       @unique @default("") @db.NVarChar(30)
+  organization   Organization @relation("OrganizationToBusiness", fields: [organizationId], references: [id], onDelete: Cascade)
+  location       Location[]   @relation("BusinessToLocation")
+  items          MasterItem[]
 
-  location     Location[]   @relation("BusinessToLocation")
-  organization Organization @relation("OrganizationToBusiness", fields: [organizationId], references: [id], onDelete: Cascade)
-
-  bgBusinessCode String @default("")
-
-  @@unique([bgBusinessCode])
   @@index([organizationId])
   @@map("Business")
 }
@@ -77,71 +74,70 @@ model Location {
   name           String      @db.NVarChar(100)
   isActive       Boolean
   businessId     String      @db.NVarChar(50)
-  business       Business    @relation("BusinessToLocation", fields: [businessId], references: [id], onDelete: Cascade)
   organizationId String      @db.NVarChar(50)
   createdAt      DateTime    @db.DateTime
   updatedAt      DateTime    @db.DateTime
-  bgLocationCode String      @default("") @db.NVarChar(30)
-  inventory      Inventory[] @relation("LocationToInventory")
+  bgLocationCode String      @unique @default("") @db.NVarChar(30)
+  inventory      Inventory[]
+  business       Business    @relation("BusinessToLocation", fields: [businessId], references: [id], onDelete: Cascade)
 
-  @@unique([bgLocationCode])
   @@index([businessId])
   @@index([organizationId])
   @@map("Location")
 }
 
 model RegistrationStatus {
-  id       String  @id(map: "PK_RegistrationStatus") @unique @default(uuid()) @db.NVarChar(30)
-  code     String  @unique @db.NVarChar(30)
-  name     String  @db.NVarChar(100)
-  isActive Boolean
-
+  id           String         @id(map: "PK_RegistrationStatus") @unique @default(uuid()) @db.NVarChar(30)
+  code         String         @unique @db.NVarChar(30)
+  name         String         @db.NVarChar(100)
+  isActive     Boolean
   registration Registration[] @relation("RegStatusToRegList")
 
   @@map("RegistrationStatus")
 }
 
 model Registration {
-  locationCode String   @db.NVarChar(30)
-  cpuId        String   @db.NVarChar(100)
-  macAddress   String   @db.NVarChar(100)
-  mbSerial     String   @db.NVarChar(100)
-  hddSerial    String   @db.NVarChar(100)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @default(now())
-
-  statusId String             @default("whitelisted") @db.NVarChar(30)
-  status   RegistrationStatus @relation("RegStatusToRegList", fields: [statusId], references: [id], onDelete: Cascade)
+  locationCode String             @db.NVarChar(30)
+  cpuId        String             @db.NVarChar(100)
+  macAddress   String             @db.NVarChar(100)
+  mbSerial     String             @db.NVarChar(100)
+  hddSerial    String             @db.NVarChar(100)
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @default(now())
+  statusId     String             @default("whitelisted") @db.NVarChar(30)
+  status       RegistrationStatus @relation("RegStatusToRegList", fields: [statusId], references: [id], onDelete: Cascade)
 
   @@unique([locationCode, cpuId, macAddress, mbSerial, hddSerial], map: "IDX_Registration")
   @@map("Registration")
 }
 
 model Inventory {
-  locationCode String   @db.NVarChar(30)
-  itemCode     String   @db.NVarChar(50)
-  qty          Decimal  @db.Decimal(18, 2)
-  cost         Decimal  @db.Decimal(18, 2)
-  price        Decimal  @db.Decimal(18, 2)
-  location     Location @relation("LocationToInventory", fields: [locationCode], references: [bgLocationCode])
+  locationCode String     @db.NVarChar(30)
+  itemCode     String     @db.NVarChar(50)
+  qty          Decimal    @db.Decimal(18, 2)
+  cost         Decimal    @db.Decimal(18, 2)
+  price        Decimal    @db.Decimal(18, 2)
+  location     Location   @relation(fields: [locationCode], references: [bgLocationCode], onUpdate: NoAction, map: "FK_Inventory_Location")
+  item         MasterItem @relation(fields: [itemCode], references: [itemCode], onUpdate: NoAction, map: "FK_Inventory_MasterItem")
 
-  @@unique([locationCode, itemCode], map: "IDX_Inventory")
-  @@unique([locationCode, itemCode], map: "UQ_Inventory")
+  @@unique([locationCode, itemCode])
   @@map("Inventory")
 }
 
 model MasterItem {
-  businessCode String   @db.NVarChar(30)
-  itemCode     String   @db.NVarChar(50)
-  itemName     String   @db.NVarChar(200)
-  brand        String?  @db.NVarChar(50)
-  category     String?  @db.NVarChar(50)
-  generic      String?  @db.NVarChar(50)
-  uom          String?  @db.NVarChar(50)
-  cost         Decimal? @db.Decimal(18, 2)
-  price        Decimal? @db.Decimal(18, 2)
+  businessCode String      @db.NVarChar(30)
+  itemCode     String      @unique(map: "IDX_MasterItem") @db.NVarChar(50)
+  code         String      @db.NVarChar(50)
+  name         String      @db.NVarChar(200)
+  brand        String?     @db.NVarChar(50)
+  category     String?     @db.NVarChar(50)
+  generic      String?     @db.NVarChar(50)
+  uom          String?     @db.NVarChar(50)
+  cost         Decimal?    @db.Decimal(18, 2)
+  price        Decimal?    @db.Decimal(18, 2)
+  inventory    Inventory[]
+  business     Business    @relation(fields: [businessCode], references: [bgBusinessCode], onUpdate: NoAction, map: "FK_MasterItem_Business")
 
-  @@unique([businessCode, itemCode], map: "IDX_MasterItem")
   @@map("MasterItem")
 }
 
@@ -195,8 +191,8 @@ model ModTransferHeader {
   remarks_tx     String?           @db.NVarChar(200)
   sttrantyid_no  Int?
   refid_no       Int?
+  isGet          Boolean           @default(false)
   details        ModStockDetails[] @relation("transfer")
-  isGet          Boolean           @default(false) @db.Bit()
 
   @@unique([locationCode, doc_nb], map: "uq_InventoryTransferHeader")
   @@map("ModTransferHeader")
@@ -271,4 +267,14 @@ model ModPosting {
   inv_nb       String?   @db.NVarChar(100)
 
   @@unique([locationCode, locid_no, itemid_no], map: "uq_ModPosting")
+}
+
+model sysdiagrams {
+  name         String @db.NVarChar(128)
+  principal_id Int
+  diagram_id   Int    @id(map: "PK__sysdiagr__C2B05B614F412E55") @default(autoincrement())
+  version      Int?
+  definition   Bytes?
+
+  @@unique([principal_id, name], map: "UK_principal_name")
 }

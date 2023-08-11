@@ -56,7 +56,8 @@ export const ItemMasterSchema = z.object({
     z.object({
       businessCode: z.string(),
       itemCode: z.string(),
-      itemName: z.string(),
+      code: z.string(),
+      name: z.string(),
       brand: z.string().nullish(),
       category: z.string().nullish(),
       generic: z.string().nullish(),

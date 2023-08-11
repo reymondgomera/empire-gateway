@@ -11,6 +11,8 @@ import {
   ReferenceDto
 } from './dto'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
+import { sliceIntoChunks } from '@/common/utils/helper'
+import { clearConfigCache } from 'prettier'
 
 @Injectable()
 export class EmpireService {
@@ -77,19 +79,38 @@ export class EmpireService {
     try {
       const { items } = data
 
-      await this.prisma.$transaction(async (db) => {
-        try {
-          await db.$executeRaw`DELETE FROM Inventory WHERE locationCode = ${locationCode}`
-        } catch (error) {
-          throw new UnprocessableEntity('Error deleting Inventory Data.')
-        }
+      const dataItems = sliceIntoChunks(items, 1000)
+      let tempItems: InventoryDataDto['items'] = []
 
-        try {
-          await db.inventory.createMany({ data: items })
-        } catch (error) {
-          throw new UnprocessableEntity('Error creating Inventory Data.')
-        }
-      })
+      for (let i = 0; i < dataItems.length; i++) {
+        const e = dataItems[i]
+        tempItems.push(e)
+      }
+
+      const createInventory = tempItems.map((itemArr) => this.prisma.inventory.createMany({ data: itemArr }))
+
+      try {
+        await this.prisma.$executeRaw`DELETE FROM Inventory WHERE locationCode = ${locationCode}`
+        await Promise.all(createInventory)
+
+        return { success: true }
+      } catch (error) {
+        throw new UnprocessableEntity('Error posting Inventory Data.')
+      }
+
+      // await this.prisma.$transaction(async (db) => {
+      //   try {
+      //     await db.$executeRaw`DELETE FROM Inventory WHERE locationCode = ${locationCode}`
+      //   } catch (error) {
+      //     throw new UnprocessableEntity('Error deleting Inventory Data.')
+      //   }
+
+      //   try {
+      //     await db.inventory.createMany({ data: items })
+      //   } catch (error) {
+      //     throw new UnprocessableEntity('Error creating Inventory Data.')
+      //   }
+      // })
 
       return { success: true }
     } catch (error) {
@@ -111,21 +132,24 @@ export class EmpireService {
     try {
       const { items } = data
 
-      await this.prisma.$transaction(async (db) => {
-        try {
-          await db.$executeRaw`DELETE FROM MasterItem WHERE businessCode = ${businessCode}`
-        } catch (error) {
-          throw new UnprocessableEntity('Error deleting Item Master Data.')
-        }
+      const dataItems = sliceIntoChunks(items, 1000)
+      let tempItems: ReferenceDto['items'] = []
 
-        try {
-          await db.masterItem.createMany({ data: items })
-        } catch (error) {
-          throw new UnprocessableEntity('Error creating Master Data.')
-        }
-      })
+      for (let i = 0; i < dataItems.length; i++) {
+        const e = dataItems[i]
+        tempItems.push(e)
+      }
 
-      return { success: true }
+      const createItems = tempItems.map((itemArr) => this.prisma.masterItem.createMany({ data: itemArr }))
+
+      try {
+        await this.prisma.$executeRaw`DELETE FROM MasterItem WHERE businessCode = ${businessCode}`
+        await Promise.all(createItems)
+
+        return { success: true }
+      } catch (error) {
+        throw new UnprocessableEntity('Error posting Item Master Data.')
+      }
     } catch (error) {
       if (error instanceof UnprocessableEntity) {
         throw new UnprocessableEntity(error)
