@@ -118,7 +118,7 @@ model Inventory {
   cost         Decimal    @db.Decimal(18, 2)
   price        Decimal    @db.Decimal(18, 2)
   location     Location   @relation(fields: [locationCode], references: [bgLocationCode], onUpdate: NoAction, map: "FK_Inventory_Location")
-  item         MasterItem @relation(fields: [itemCode], references: [itemCode], onUpdate: NoAction, map: "FK_Inventory_MasterItem")
+  item         MasterItem @relation(fields: [itemCode], references: [itemCode], onUpdate: NoAction, onDelete: Cascade, map: "FK_Inventory_MasterItem")
 
   @@unique([locationCode, itemCode])
   @@map("Inventory")

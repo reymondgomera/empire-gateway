@@ -132,24 +132,32 @@ export class EmpireService {
     try {
       const { items } = data
 
-      const dataItems = sliceIntoChunks(items, 1000)
-      let tempItems: ReferenceDto['items'] = []
+      const upsertItems = items.map((item) =>
+        this.prisma.masterItem.upsert({ where: { itemCode: item.itemCode }, create: item, update: item })
+      )
 
-      for (let i = 0; i < dataItems.length; i++) {
-        const e = dataItems[i]
-        tempItems.push(e)
-      }
+      Promise.all(upsertItems)
 
-      const createItems = tempItems.map((itemArr) => this.prisma.masterItem.createMany({ data: itemArr }))
+      return { success: true }
 
-      try {
-        await this.prisma.$executeRaw`DELETE FROM MasterItem WHERE businessCode = ${businessCode}`
-        await Promise.all(createItems)
+      // const dataItems = sliceIntoChunks(items, 1000)
+      // let tempItems: ReferenceDto['items'] = []
 
-        return { success: true }
-      } catch (error) {
-        throw new UnprocessableEntity('Error posting Item Master Data.')
-      }
+      // for (let i = 0; i < dataItems.length; i++) {
+      //   const e = dataItems[i]
+      //   tempItems.push(e)
+      // }
+
+      // const createItems = tempItems.map((itemArr) => this.prisma.masterItem.createMany({ data: itemArr }))
+
+      // try {
+      //   await this.prisma.$executeRaw`DELETE FROM MasterItem WHERE businessCode = ${businessCode}`
+      //   await Promise.all(createItems)
+
+      //   return { success: true }
+      // } catch (error) {
+      //   throw new UnprocessableEntity('Error posting Item Master Data.')
+      // }
     } catch (error) {
       if (error instanceof UnprocessableEntity) {
         throw new UnprocessableEntity(error)
