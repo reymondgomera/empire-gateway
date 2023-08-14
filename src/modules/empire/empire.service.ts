@@ -79,38 +79,15 @@ export class EmpireService {
     try {
       const { items } = data
 
-      const dataItems = sliceIntoChunks(items, 1000)
-      let tempItems: InventoryDataDto['items'] = []
+      const upsertItems = items.map((item) =>
+        this.prisma.inventory.upsert({
+          where: { locationCode_itemCode: { locationCode, itemCode: item.itemCode } },
+          create: item,
+          update: item
+        })
+      )
 
-      for (let i = 0; i < dataItems.length; i++) {
-        const e = dataItems[i]
-        tempItems.push(e)
-      }
-
-      const createInventory = tempItems.map((itemArr) => this.prisma.inventory.createMany({ data: itemArr }))
-
-      try {
-        await this.prisma.$executeRaw`DELETE FROM Inventory WHERE locationCode = ${locationCode}`
-        await Promise.all(createInventory)
-
-        return { success: true }
-      } catch (error) {
-        throw new UnprocessableEntity('Error posting Inventory Data.')
-      }
-
-      // await this.prisma.$transaction(async (db) => {
-      //   try {
-      //     await db.$executeRaw`DELETE FROM Inventory WHERE locationCode = ${locationCode}`
-      //   } catch (error) {
-      //     throw new UnprocessableEntity('Error deleting Inventory Data.')
-      //   }
-
-      //   try {
-      //     await db.inventory.createMany({ data: items })
-      //   } catch (error) {
-      //     throw new UnprocessableEntity('Error creating Inventory Data.')
-      //   }
-      // })
+      Promise.all(upsertItems)
 
       return { success: true }
     } catch (error) {
@@ -139,25 +116,6 @@ export class EmpireService {
       Promise.all(upsertItems)
 
       return { success: true }
-
-      // const dataItems = sliceIntoChunks(items, 1000)
-      // let tempItems: ReferenceDto['items'] = []
-
-      // for (let i = 0; i < dataItems.length; i++) {
-      //   const e = dataItems[i]
-      //   tempItems.push(e)
-      // }
-
-      // const createItems = tempItems.map((itemArr) => this.prisma.masterItem.createMany({ data: itemArr }))
-
-      // try {
-      //   await this.prisma.$executeRaw`DELETE FROM MasterItem WHERE businessCode = ${businessCode}`
-      //   await Promise.all(createItems)
-
-      //   return { success: true }
-      // } catch (error) {
-      //   throw new UnprocessableEntity('Error posting Item Master Data.')
-      // }
     } catch (error) {
       if (error instanceof UnprocessableEntity) {
         throw new UnprocessableEntity(error)
@@ -168,7 +126,6 @@ export class EmpireService {
   }
 
   async getInventoryData(businessCode: string, locationCode: string) {
-    console.log('🚀 ~ file: empire.service.ts:97 ~ EmpireService ~ getInventoryData ~ businessCode:', businessCode)
     if (!businessCode) {
       throw new BadRequest({ message: '[HEADER] Business code not found.', code: 'H002' })
       // return { message: '[HEADER] Business code not found.' }
