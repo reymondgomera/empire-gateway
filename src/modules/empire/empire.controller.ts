@@ -46,7 +46,7 @@ export class EmpireController {
   }
 
   @Get('transfer')
-  getTransfer(@Headers('x-location-code') locationCode: string, @Query() params: TransferQueryParamDto) {
+  getTransfer(@Headers('x-business-code') locationCode: string, @Query() params: TransferQueryParamDto) {
     return this.empireService.getTransferData(locationCode, params)
   }
 

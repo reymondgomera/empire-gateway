@@ -73,7 +73,7 @@ export class ReferenceDto extends createZodDto(ItemMasterSchema) {}
 export const ModTransferHeaderDataSchema = z.object({
   transferHeader: z.array(
     z.object({
-      locationCode: z.string(),
+      businessCode: z.string(),
       tran_ty: z.number(),
       flocid_no: z.number(),
       tlocid_no: z.number(),
@@ -115,7 +115,7 @@ export const ModTransferHeaderDataSchema = z.object({
 export const ModStockDetailsDataSchema = z.object({
   stockDetails: z.array(
     z.object({
-      locationCode: z.string(),
+      businessCode: z.string(),
       doc_nb: z.string(),
       typeid_no: z.number().optional(),
       itemid_no: z.number(),
@@ -156,7 +156,7 @@ export const ModStockDetailsDataSchema = z.object({
 export const ModPostingDataSchema = z.object({
   posting: z.array(
     z.object({
-      locationCode: z.string(),
+      businessCode: z.string(),
       line_no: z.number(),
       tran_ty: z.number(),
       module_nm: z.string(),
@@ -167,10 +167,10 @@ export const ModPostingDataSchema = z.object({
       qty_am: z.number(),
       brrecvd_am: z.number().nullable(),
       uomid_no: z.number().nullable(),
-      serial_nb: z.string().nullable(),
-      batch_nb: z.string().nullable(),
-      lot_nb: z.string().nullable(),
-      exp_dt: z.dateString().nullable(),
+      serial_nb: z.string(),
+      batch_nb: z.string(),
+      lot_nb: z.string(),
+      exp_dt: z.dateString(),
       postedid_no: z.number(),
       tran_dt: z.dateString().nullable(),
       userid_no: z.number().nullable(),

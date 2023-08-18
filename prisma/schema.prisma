@@ -156,7 +156,7 @@ model SalesDetails {
 }
 
 model ModTransferHeader {
-  locationCode   String            @db.NVarChar(50)
+  businessCode   String            @db.NVarChar(50)
   tran_ty        Int               @db.TinyInt
   flocid_no      Int
   tlocid_no      Int?
@@ -194,12 +194,12 @@ model ModTransferHeader {
   isGet          Boolean           @default(false)
   details        ModStockDetails[] @relation("transfer")
 
-  @@unique([locationCode, doc_nb], map: "uq_InventoryTransferHeader")
+  @@unique([businessCode, doc_nb], map: "uq_InventoryTransferHeader")
   @@map("ModTransferHeader")
 }
 
 model ModStockDetails {
-  locationCode  String            @db.NVarChar(50)
+  businessCode  String            @db.NVarChar(50)
   doc_nb        String            @db.NVarChar(20)
   typeid_no     Int?
   itemid_no     Int
@@ -233,14 +233,15 @@ model ModStockDetails {
   recvdt_tx     String?           @db.NVarChar(100)
   invdt_tx      String?           @db.NVarChar(100)
   inv_nb        String?           @db.NVarChar(100)
-  header        ModTransferHeader @relation("transfer", fields: [locationCode, doc_nb], references: [locationCode, doc_nb], onDelete: Cascade)
+  header        ModTransferHeader @relation("transfer", fields: [businessCode, doc_nb], references: [businessCode, doc_nb], onDelete: Cascade)
+  posting       ModPosting[]      @relation("details_posting")
 
-  @@unique([locationCode, doc_nb, itemid_no], map: "uq_InventoryStockDetails")
+  @@unique([businessCode, doc_nb, locid_no, itemid_no], map: "uq_InventoryStockDetails")
   @@map("ModStockDetails")
 }
 
 model ModPosting {
-  locationCode String    @db.NVarChar(50)
+  businessCode String    @db.NVarChar(50)
   line_no      Int
   tran_ty      Int       @db.TinyInt
   module_nm    String    @db.NVarChar(50)
@@ -251,10 +252,10 @@ model ModPosting {
   qty_am       Decimal   @db.Decimal(18, 2)
   brrecvd_am   Decimal?  @db.Decimal(18, 2)
   uomid_no     Int?
-  serial_nb    String?   @db.NVarChar(20)
-  batch_nb     String?   @db.NVarChar(20)
-  lot_nb       String?   @db.NVarChar(20)
-  exp_dt       DateTime? @db.Date
+  serial_nb    String    @db.NVarChar(20)
+  batch_nb     String    @db.NVarChar(20)
+  lot_nb       String    @db.NVarChar(20)
+  exp_dt       DateTime  @db.Date
   postedid_no  Int
   tran_dt      DateTime? @db.SmallDateTime
   userid_no    Int?
@@ -266,7 +267,9 @@ model ModPosting {
   invdt_tx     String?   @db.NVarChar(100)
   inv_nb       String?   @db.NVarChar(100)
 
-  @@unique([locationCode, locid_no, itemid_no], map: "uq_ModPosting")
+  details ModStockDetails? @relation("details_posting", fields: [businessCode, source_nb, locid_no, itemid_no], references: [businessCode, doc_nb, locid_no, itemid_no])
+
+  @@unique([businessCode, source_nb, locid_no, itemid_no, serial_nb, batch_nb, lot_nb, exp_dt], map: "uq_ModPosting")
 }
 
 model sysdiagrams {

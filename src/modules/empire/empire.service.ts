@@ -169,20 +169,20 @@ export class EmpireService {
       const { transferHeader, stockDetails, posting } = data
 
       const newHeader = transferHeader[0]
-      const { locationCode, doc_nb } = newHeader
+      const { businessCode, doc_nb } = newHeader
 
       await this.prisma.$transaction([
         this.prisma.modTransferHeader.upsert({
           create: newHeader,
           update: newHeader,
-          where: { locationCode_doc_nb: { locationCode, doc_nb } }
+          where: { businessCode_doc_nb: { businessCode, doc_nb } }
         }),
         this.prisma.modStockDetails.deleteMany({
-          where: { AND: { locationCode, doc_nb } }
+          where: { AND: { businessCode, doc_nb } }
         }),
         this.prisma.modStockDetails.createMany({ data: stockDetails }),
         this.prisma.modPosting.deleteMany({
-          where: { AND: { locationCode, source_nb: doc_nb } }
+          where: { AND: { businessCode, source_nb: doc_nb } }
         }),
         this.prisma.modPosting.createMany({ data: posting })
       ])
@@ -209,7 +209,13 @@ export class EmpireService {
     }
   }
 
-  async getTransferData(locationCode: string, params: TransferQueryParamDto) {
+  async getTransferData(businessCode: string, params: TransferQueryParamDto) {
+    if (!businessCode) {
+      throw new BadRequest({ message: '[HEADER] Business code not found.', code: 'H002' })
+      // return { message: '[HEADER] Business code not found.' }
+      // throw new Error('Business Code HEADER not found.')
+    }
+
     try {
       const { tlocid_no, getAll } = params
       const newLocId = Number(tlocid_no)
@@ -217,12 +223,11 @@ export class EmpireService {
       // const isGetAll = newGetAll ? undefined : { isGet: true }
 
       const isGetAll = newGetAll
-        ? { locationCode: locationCode, tlocid_no: newLocId }
-        : { locationCode: locationCode, tlocid_no: newLocId, isGet: false }
+        ? { businessCode: businessCode, tlocid_no: newLocId }
+        : { businessCode: businessCode, tlocid_no: newLocId, isGet: false }
 
-      //console.log(isGetAll)
       const header = await this.prisma.modTransferHeader.findMany({
-        // where: { AND: { locationCode: locationCode, tlocid_no: newLocId, ...isGetAll } },
+        // where: { AND: { businessCode: businessCode, tlocid_no: newLocId, ...isGetAll } },
         where: { AND: isGetAll },
         select: { doc_nb: true }
       })
@@ -233,7 +238,7 @@ export class EmpireService {
 
       const result = await this.prisma.modTransferHeader.findMany({
         where: { AND: { doc_nb: { in: doc_nb } } },
-        include: { details: true }
+        include: { details: { include: { posting: true }, orderBy: { posting: { _count: 'desc' } } } }
       })
 
       // SET TO TRUE IF ALREADY GET. ---> IKAW NA BAHALA IF ANO YUNG POLICY MO SA SERVER AGENT.
@@ -249,26 +254,26 @@ export class EmpireService {
     }
   }
 
-  async removeRecord(locationCode: string, doc_nb: string) {
-    try {
-      await this.prisma.$transaction([
-        this.prisma.modTransferHeader.deleteMany({
-          where: { AND: { locationCode: locationCode, doc_nb: doc_nb } }
-        }),
-        this.prisma.modStockDetails.deleteMany({
-          where: { AND: { locationCode, doc_nb } }
-        })
-      ])
+  // async removeRecord(locationCode: string, doc_nb: string) {
+  //   try {
+  //     await this.prisma.$transaction([
+  //       this.prisma.modTransferHeader.deleteMany({
+  //         where: { AND: { locationCode: locationCode, doc_nb: doc_nb } }
+  //       }),
+  //       this.prisma.modStockDetails.deleteMany({
+  //         where: { AND: { locationCode, doc_nb } }
+  //       })
+  //     ])
 
-      return { success: true, empire: 'empire' }
-    } catch (error) {
-      if (error instanceof UnprocessableEntity) {
-        throw new UnprocessableEntity(error)
-      }
+  //     return { success: true, empire: 'empire' }
+  //   } catch (error) {
+  //     if (error instanceof UnprocessableEntity) {
+  //       throw new UnprocessableEntity(error)
+  //     }
 
-      throw new InternalServerError(error)
-    }
-  }
+  //     throw new InternalServerError(error)
+  //   }
+  // }
 
   async findAll() {
     try {
