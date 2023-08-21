@@ -6,16 +6,14 @@ import { CacheInterceptor } from '@nestjs/cache-manager'
 import { CacheModule } from '@nestjs/cache-manager'
 
 // COMMON
-import { AuthenticationMiddleware } from '@/common/middleware/auth.middleware'
-import { RequestService } from '@/common/request.service'
 import { ZodValidationPipe } from 'nestjs-zod'
 
-// import { AuthModule } from '@/modules/auth/auth.module'
-// import { UserModule } from '@/modules/user/user.module'
-import { PrismaModule } from '@/modules/prisma/prisma.module'
-import { PortalModule } from '@/modules/portal/portal.module'
-import { EmpireModule } from '@/modules/empire/empire.module'
+import { PortalModule } from './modules/portal/portal.module'
+import { EmpireModule } from './modules/empire/empire.module'
 import { config } from './common/config/config'
+import { AuthenticationMiddleware } from './common/middleware/auth.middleware'
+import { RequestService } from './common/request.service'
+import { PrismaModule } from './modules/prisma/prisma.module'
 
 @Module({
   imports: [

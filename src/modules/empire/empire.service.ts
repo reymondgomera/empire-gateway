@@ -1,5 +1,5 @@
-import { PrismaService } from '@/modules/prisma/prisma.service'
-import { BadRequest, InternalServerError, NoRecordFound, UnprocessableEntity } from '@/common/utils/custom-error'
+import { PrismaService } from '../../modules/prisma/prisma.service'
+import { BadRequest, InternalServerError, NoRecordFound, UnprocessableEntity } from '../../common/utils/custom-error'
 import { Injectable } from '@nestjs/common'
 import {
   SalesParamDto,
@@ -11,8 +11,6 @@ import {
   ReferenceDto
 } from './dto'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
-import { sliceIntoChunks } from '@/common/utils/helper'
-import { clearConfigCache } from 'prettier'
 
 @Injectable()
 export class EmpireService {

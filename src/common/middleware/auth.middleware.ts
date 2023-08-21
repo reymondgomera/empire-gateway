@@ -1,6 +1,6 @@
 import { Injectable, Logger, NestMiddleware, UnauthorizedException } from '@nestjs/common'
 import { NextFunction, Request, Response } from 'express'
-import { PortalService } from '@/modules/portal/portal.service'
+import { PortalService } from '../../modules/portal/portal.service'
 import { ConfigService } from '@nestjs/config'
 import { AuthenticationError } from '../utils/custom-error'
 

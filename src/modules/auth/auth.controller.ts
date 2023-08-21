@@ -3,8 +3,8 @@ import { HttpStatus } from '@nestjs/common/enums'
 import { AuthService } from './auth.service'
 import { AuthDto } from './dto'
 import { Tokens } from './types'
-import { GetCurrentUser, GetCurrentUserId, Public } from '@/common/decorators'
-import { RtGuard } from '@/common/guards'
+import { GetCurrentUser, GetCurrentUserId, Public } from '../../common/decorators'
+import { RtGuard } from '../../common/guards'
 import { ApiTags } from '@nestjs/swagger'
 
 @ApiTags('Authentication')

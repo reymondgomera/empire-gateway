@@ -1,4 +1,3 @@
-import { ModTransferHeader } from '@prisma/client'
 import { createZodDto } from 'nestjs-zod'
 import { z } from 'nestjs-zod/z'
 

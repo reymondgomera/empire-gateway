@@ -1,5 +1,5 @@
-import { PrismaService } from '@/modules/prisma/prisma.service'
-import { AuthenticationError, ForbiddenAccess, InternalServerError, UnprocessableEntity } from '@/common/utils/custom-error'
+import { PrismaService } from '../prisma/prisma.service'
+import { AuthenticationError, ForbiddenAccess, InternalServerError, UnprocessableEntity } from '../../common/utils/custom-error'
 import { HttpService } from '@nestjs/axios'
 import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { AxiosRequestConfig } from 'axios'

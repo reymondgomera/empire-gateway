@@ -17,9 +17,6 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "strictNullChecks": true,
-    "strict": true,
-    "paths" : {
-        "@/*" : ["src/*"]
-    }
+    "strict": true
   }
 }
