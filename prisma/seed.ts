@@ -6,12 +6,19 @@ async function main() {
   await seedMasterUser()
 }
 
+const masterUser = userData.map(async (data) => {
+  await prisma.masterUser.upsert({ where: { userName: data.userName }, update: data, create: data })
+})
+
+const status = ['whitelisted', 'blocklisted']
+const regStatus = status.map(async (stat) => {
+  const data = { id: stat, code: stat, name: stat, isActive: true }
+
+  await prisma.registrationStatus.upsert({ where: { id: stat }, update: data, create: data })
+})
+
 async function seedMasterUser() {
-  await Promise.all(
-    userData.map(async (data) => {
-      await prisma.masterUser.upsert({ where: { userName: data.userName }, update: data, create: data })
-    })
-  )
+  await Promise.all([masterUser, regStatus])
 }
 
 // async function seedEntities() {
