@@ -1,6 +1,6 @@
 ### GATEWAY API SERVICE
 
-REGISTRATION OF LOCATIONs
+REGISTRATION OF LOCATION
 
 - use this route `/empire/registration`
 - need bearer token/api key (coming from Portal) and attach to HEADER
