@@ -1,20 +1,19 @@
-import { Controller, Get, ParseBoolPipe, Post, Query, Headers } from '@nestjs/common'
+import { Body, Controller, Get, ParseBoolPipe, Post, Query } from '@nestjs/common'
 import { PortalService } from './portal.service'
 import { PortalServiceDto } from './dto/portal.dto'
-import { ConfigService } from '@nestjs/config'
 
 @Controller('portal')
 export class PortalController {
   constructor(private readonly portalService: PortalService) {}
 
   @Get('get-master')
-  findAll(): Promise<PortalServiceDto> {
-    return this.portalService.findAll()
+  getPortalMaster(): Promise<PortalServiceDto> {
+    return this.portalService.getPortalMaster()
   }
 
   @Post('validate-master')
-  create() {
-    return this.portalService.create()
+  validateMaster() {
+    return this.portalService.validateMaster()
   }
 
   @Get('generate-api-key')

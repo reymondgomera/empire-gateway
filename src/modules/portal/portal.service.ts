@@ -27,9 +27,9 @@ export class PortalService {
     private readonly configService: ConfigService,
     private jwtService: JwtService
   ) {}
-  async create() {
+  async validateMaster() {
     try {
-      const portalData = await this.findAll()
+      const portalData = await this.getPortalMaster()
       const parseData = PortalServiceSchema.safeParse(portalData)
 
       if (parseData.success === false) {
@@ -78,7 +78,7 @@ export class PortalService {
     }
   }
 
-  async findAll(): Promise<PortalServiceDto> {
+  async getPortalMaster(): Promise<PortalServiceDto> {
     const BG_API_SERVICE_KEY = this.configService.get('secret').BG_API_SERVICE_KEY
     const PORTAL_NEXT_API_URL = this.configService.get('url').PORTAL_NEXT_API_URL
 

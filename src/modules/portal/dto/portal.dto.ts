@@ -55,6 +55,8 @@ export const PortalServiceSchema = z.object({
   )
 })
 
+export class PortalServiceDto extends createZodDto(PortalServiceSchema) {}
+
 export const TokenPayload = z.object({
   apiKey: z.string(),
   orgId: z.string(),
@@ -65,6 +67,4 @@ export const TokenPayload = z.object({
   iatDate: z.date(),
   expDate: z.date()
 })
-
-export class PortalServiceDto extends createZodDto(PortalServiceSchema) {}
 export class TokenPayloadDto extends createZodDto(TokenPayload) {}
