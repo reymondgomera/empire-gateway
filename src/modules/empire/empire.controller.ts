@@ -15,6 +15,11 @@ export class EmpireController {
   prisma: any
   constructor(private readonly empireService: EmpireService) {}
 
+  @Get('test')
+  test() {
+    return this.empireService.test()
+  }
+
   @Post('registration')
   postRegistration(@Body() body: RegistrationLocationDto) {
     return this.empireService.locationRegistration(body)

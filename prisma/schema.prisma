@@ -60,6 +60,7 @@ model Business {
   createdAt      DateTime     @db.DateTime
   updatedAt      DateTime     @db.DateTime
   bgBusinessCode String       @unique @default("") @db.NVarChar(30)
+  apiKey         String?      @db.NVarChar(Max)
   organization   Organization @relation("OrganizationToBusiness", fields: [organizationId], references: [id], onDelete: Cascade)
   location       Location[]   @relation("BusinessToLocation")
   items          MasterItem[]
@@ -118,7 +119,7 @@ model Inventory {
   cost         Decimal    @db.Decimal(18, 2)
   price        Decimal    @db.Decimal(18, 2)
   location     Location   @relation(fields: [locationCode], references: [bgLocationCode], onUpdate: NoAction, map: "FK_Inventory_Location")
-  item         MasterItem @relation(fields: [itemCode], references: [itemCode], onUpdate: NoAction, onDelete: Cascade, map: "FK_Inventory_MasterItem")
+  item         MasterItem @relation(fields: [itemCode], references: [itemCode], onDelete: Cascade, onUpdate: NoAction, map: "FK_Inventory_MasterItem")
 
   @@unique([locationCode, itemCode])
   @@map("Inventory")
@@ -233,41 +234,40 @@ model ModStockDetails {
   recvdt_tx     String?           @db.NVarChar(100)
   invdt_tx      String?           @db.NVarChar(100)
   inv_nb        String?           @db.NVarChar(100)
-  header        ModTransferHeader @relation("transfer", fields: [businessCode, doc_nb], references: [businessCode, doc_nb], onDelete: Cascade)
   posting       ModPosting[]      @relation("details_posting")
+  header        ModTransferHeader @relation("transfer", fields: [businessCode, doc_nb], references: [businessCode, doc_nb], onDelete: Cascade)
 
   @@unique([businessCode, doc_nb, locid_no, itemid_no], map: "uq_InventoryStockDetails")
   @@map("ModStockDetails")
 }
 
 model ModPosting {
-  businessCode String    @db.NVarChar(50)
+  businessCode String          @db.NVarChar(50)
   line_no      Int
-  tran_ty      Int       @db.TinyInt
-  module_nm    String    @db.NVarChar(50)
-  source_nb    String    @db.NVarChar(20)
-  post_nb      String?   @db.NVarChar(20)
+  tran_ty      Int             @db.TinyInt
+  module_nm    String          @db.NVarChar(50)
+  source_nb    String          @db.NVarChar(20)
+  post_nb      String?         @db.NVarChar(20)
   locid_no     Int
   itemid_no    Int
-  qty_am       Decimal   @db.Decimal(18, 2)
-  brrecvd_am   Decimal?  @db.Decimal(18, 2)
+  qty_am       Decimal         @db.Decimal(18, 2)
+  brrecvd_am   Decimal?        @db.Decimal(18, 2)
   uomid_no     Int?
-  serial_nb    String    @db.NVarChar(20)
-  batch_nb     String    @db.NVarChar(20)
-  lot_nb       String    @db.NVarChar(20)
-  exp_dt       DateTime  @db.Date
+  serial_nb    String          @db.NVarChar(20)
+  batch_nb     String          @db.NVarChar(20)
+  lot_nb       String          @db.NVarChar(20)
+  exp_dt       DateTime        @db.Date
   postedid_no  Int
-  tran_dt      DateTime? @db.SmallDateTime
+  tran_dt      DateTime?       @db.SmallDateTime
   userid_no    Int?
-  count_am     Decimal?  @db.Decimal(18, 2)
-  variance_am  Decimal?  @db.Decimal(18, 2)
+  count_am     Decimal?        @db.Decimal(18, 2)
+  variance_am  Decimal?        @db.Decimal(18, 2)
   child_yn     Boolean?
-  year_tx      String?   @db.NVarChar(4)
-  recvdt_tx    String?   @db.NVarChar(100)
-  invdt_tx     String?   @db.NVarChar(100)
-  inv_nb       String?   @db.NVarChar(100)
-
-  details ModStockDetails? @relation("details_posting", fields: [businessCode, source_nb, locid_no, itemid_no], references: [businessCode, doc_nb, locid_no, itemid_no])
+  year_tx      String?         @db.NVarChar(4)
+  recvdt_tx    String?         @db.NVarChar(100)
+  invdt_tx     String?         @db.NVarChar(100)
+  inv_nb       String?         @db.NVarChar(100)
+  details      ModStockDetails @relation("details_posting", fields: [businessCode, source_nb, locid_no, itemid_no], references: [businessCode, doc_nb, locid_no, itemid_no])
 
   @@unique([businessCode, source_nb, locid_no, itemid_no, serial_nb, batch_nb, lot_nb, exp_dt], map: "uq_ModPosting")
 }

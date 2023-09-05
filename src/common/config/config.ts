@@ -12,7 +12,7 @@ export interface Config {
     AT_SECRET: string
     RT_SECRET: string
   }
-  publicUrl: string[]
+  // publicUrl: string[]
 }
 
 const port = (process.env.PORT as unknown as number) || 4000
@@ -37,7 +37,7 @@ export const config = (): Config => ({
     API_KEY_IGNORE_EXPIRATION: process.env.API_KEY_IGNORE_EXPIRATION === 'true' || false,
     AT_SECRET: process.env.AT_SECRET || '',
     RT_SECRET: process.env.RT_SECRET || ''
-  },
+  }
   // NO AUTHORIZATION PAGE
-  publicUrl: ['get-master', 'registration', 'validate-master', 'generate-api-key', 'validate-api-key']
+  // publicUrl: ['test', 'registration', 'get-master', 'update-master', 'generate-api-key', 'validate-api-key']
 })

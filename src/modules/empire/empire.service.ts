@@ -16,6 +16,10 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 export class EmpireService {
   constructor(private readonly prisma: PrismaService) {}
 
+  async test() {
+    return await this.prisma.organization.findMany()
+  }
+
   async locationRegistration(body: RegistrationLocationDto) {
     try {
       // const { salesDetails } = data

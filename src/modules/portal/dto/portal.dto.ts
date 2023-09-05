@@ -59,9 +59,8 @@ export class PortalServiceDto extends createZodDto(PortalServiceSchema) {}
 
 export const TokenPayload = z.object({
   apiKey: z.string(),
-  orgId: z.string(),
-  businessId: z.string(),
-  locationCode: z.string(),
+  bgLocationCode: z.string(),
+  bgBusinessCode: z.string(),
   iat: z.number(),
   exp: z.number(),
   iatDate: z.date(),

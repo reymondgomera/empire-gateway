@@ -10,6 +10,7 @@ import { JwtService } from '@nestjs/jwt'
 
 import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken'
 import { PortalServiceDto, PortalServiceSchema, TokenPayloadDto } from './dto'
+import { IncomingHttpHeaders } from 'http'
 // import { encryptData } from '@/common/utils/crypto-js'
 // import { encryptPassword } from '@/common/utils/crypto-js'
 type RegistrationHeader = {
@@ -27,9 +28,9 @@ export class PortalService {
     private readonly configService: ConfigService,
     private jwtService: JwtService
   ) {}
-  async validateMaster() {
+  async updateOrganization(portalData: PortalServiceDto) {
     try {
-      const portalData = await this.getPortalMaster()
+      // const portalData = await this.getPortalMaster()
       const parseData = PortalServiceSchema.safeParse(portalData)
 
       if (parseData.success === false) {
@@ -38,37 +39,37 @@ export class PortalService {
 
       const { user, organization, business, location } = parseData.data
 
-      await this.prisma.$transaction(async (db) => {
-        try {
-          await db.portalUser.deleteMany()
-          await db.portalUser.createMany({ data: user })
-        } catch (error) {
-          throw new UnprocessableEntity('Error saving User Portal Data.')
-        }
+      // await this.prisma.$transaction(async (db) => {
+      //   try {
+      //     await db.portalUser.deleteMany()
+      //     await db.portalUser.createMany({ data: user })
+      //   } catch (error) {
+      //     throw new UnprocessableEntity('Error saving User Portal Data.')
+      //   }
 
-        try {
-          await db.organization.deleteMany()
-          await db.organization.createMany({ data: organization })
-        } catch (error) {
-          throw new UnprocessableEntity('Error saving Organization Data.')
-        }
+      //   try {
+      //     await db.organization.deleteMany()
+      //     await db.organization.createMany({ data: organization })
+      //   } catch (error) {
+      //     throw new UnprocessableEntity('Error saving Organization Data.')
+      //   }
 
-        try {
-          await db.business.deleteMany()
-          await db.business.createMany({ data: business })
-        } catch (error) {
-          throw new UnprocessableEntity('Error saving Business Data.')
-        }
+      //   try {
+      //     await db.business.deleteMany()
+      //     await db.business.createMany({ data: business })
+      //   } catch (error) {
+      //     throw new UnprocessableEntity('Error saving Business Data.')
+      //   }
 
-        try {
-          await db.location.deleteMany()
-          await db.location.createMany({ data: location })
-        } catch (error) {
-          throw new UnprocessableEntity('Error saving Location Data.')
-        }
-      })
+      //   try {
+      //     await db.location.deleteMany()
+      //     await db.location.createMany({ data: location })
+      //   } catch (error) {
+      //     throw new UnprocessableEntity('Error saving Location Data.')
+      //   }
+      // })
 
-      return { success: true }
+      // return { success: true }
     } catch (error) {
       if (error instanceof UnprocessableEntity) {
         throw new UnprocessableEntity(error)
@@ -149,7 +150,7 @@ export class PortalService {
 
     try {
       const { API_KEY_SIGNATURE_SECRET: secret, API_KEY_IGNORE_EXPIRATION: ignoreExpirationEnv } = this.configService.get('secret')
-      const ignoreExpiration = ignoreExpirationEnv === 'true' || ignoreExpirationParams
+      const ignoreExpiration = ignoreExpirationParams ? ignoreExpirationParams : ignoreExpirationEnv === 'true'
 
       const payload: TokenPayloadDto = await this.jwtService.verifyAsync(apiKey, { secret, ignoreExpiration })
 
@@ -163,7 +164,12 @@ export class PortalService {
     }
   }
 
-  async authenticateLocation(locationCode: string | undefined, details: Partial<RegistrationHeader>) {
+  async authenticateLocation(
+    locationCode: string | undefined,
+    reqHeader: IncomingHttpHeaders /* , details: Partial<RegistrationHeader> */
+  ) {
+    // const { cpuId, macAddress, mbSerial, hddSerial } = reqHeader
+
     // const { location } = payload
 
     // const business = await this.prisma.business.findFirst({ where: { id: businessId, isActive: true } })
@@ -179,7 +185,10 @@ export class PortalService {
       })
     }
 
-    const { cpuId, hddSerial, macAddress, mbSerial } = details
+    const cpuId = reqHeader['x-cpu-id'] as string
+    const macAddress = reqHeader['x-mac-address'] as string
+    const mbSerial = reqHeader['x-mb-serial'] as string
+    const hddSerial = reqHeader['x-hdd-serial'] as string
 
     const hasDetails = cpuId || hddSerial || macAddress || mbSerial
 
@@ -209,6 +218,38 @@ export class PortalService {
         message: 'Forbidden access! Please contact your provider.',
         status: locationData.statusId,
         code: 'BG101'
+      })
+    }
+
+    return true
+  }
+
+  async authenticateBusiness(businessCode: string | undefined, apiKey: string) {
+    // const { location } = payload
+
+    // const business = await this.prisma.business.findFirst({ where: { id: businessId, isActive: true } })
+
+    // if (!business) {
+    //   throw new AuthenticationError({ message: 'Kindly check your API key or Please contact your provider.', table: 'Business' })
+    // }
+
+    if (!businessCode) {
+      throw new AuthenticationError({
+        message: 'BUSINESS HEADER not found! Please contact your provider.',
+        module: 'Authenticate Location'
+      })
+    }
+
+    const businessData = await this.prisma.business.findFirst({
+      where: {
+        AND: { bgBusinessCode: businessCode, apiKey }
+      }
+    })
+
+    if (!businessData) {
+      throw new AuthenticationError({
+        message: 'Business Code OR API Key not found! Please contact your provider.',
+        table: 'Authenticate Business'
       })
     }
 

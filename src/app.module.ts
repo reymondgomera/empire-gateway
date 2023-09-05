@@ -12,8 +12,10 @@ import { PortalModule } from './modules/portal/portal.module'
 import { EmpireModule } from './modules/empire/empire.module'
 import { config } from './common/config/config'
 import { AuthenticationMiddleware } from './common/middleware/auth.middleware'
+import { CommonAuthGuard } from './common/guards/common.guard'
 import { RequestService } from './common/request.service'
 import { PrismaModule } from './modules/prisma/prisma.module'
+import { CoreModule } from './modules/core/core.module'
 
 @Module({
   imports: [
@@ -27,13 +29,14 @@ import { PrismaModule } from './modules/prisma/prisma.module'
     // UserModule,
     PrismaModule,
     PortalModule,
-    EmpireModule
+    EmpireModule,
+    CoreModule
   ],
   providers: [
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: AtGuard
-    // },
+    {
+      provide: APP_GUARD,
+      useClass: CommonAuthGuard
+    },
     {
       provide: APP_PIPE,
       useClass: ZodValidationPipe
