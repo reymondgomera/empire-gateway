@@ -10,6 +10,8 @@ import {
   ReferenceDto
 } from './dto'
 
+import { Public } from '../../common/decorators'
+
 @Controller('empire')
 export class EmpireController {
   prisma: any

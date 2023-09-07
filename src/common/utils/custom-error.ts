@@ -14,7 +14,13 @@ export class BadRequest extends HttpException {
 
 export class NoRecordFound extends HttpException {
   constructor(response?: string | Record<string, any>) {
-    super(response || 'No record found.', HttpStatus.BAD_REQUEST)
+    super(response || 'No record found.', HttpStatus.NOT_FOUND)
+  }
+}
+
+export class NotFoundException extends HttpException {
+  constructor(response?: string | Record<string, any>) {
+    super(response || 'Request Not found.', HttpStatus.NOT_FOUND)
   }
 }
 

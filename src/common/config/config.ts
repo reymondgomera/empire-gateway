@@ -22,13 +22,12 @@ const PORTAL_NEXT_API_URL = isProduction ? process.env.PORTAL_NEXT_API_URL : pro
 console.group('CONFIG ENV')
 console.log('-> NODE_ENV:', process.env.NODE_ENV)
 console.log('-> PORT:', port)
-console.log('-> PORTAL_NEXT_API_URL:', PORTAL_NEXT_API_URL)
 
 export const config = (): Config => ({
   nodeEnv: process.env.NODE_ENV || '',
   url: {
     DATABASE_URL: process.env.DATABASE_URL || '',
-    PORTAL_NEXT_API_URL: PORTAL_NEXT_API_URL || 'http://localhost:3000/api'
+    PORTAL_NEXT_API_URL: PORTAL_NEXT_API_URL || 'http://localhost:4000/api'
   },
   port: port,
   secret: {

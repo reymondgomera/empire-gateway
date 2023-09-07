@@ -15,7 +15,7 @@ import { AuthenticationMiddleware } from './common/middleware/auth.middleware'
 import { CommonAuthGuard } from './common/guards/common.guard'
 import { RequestService } from './common/request.service'
 import { PrismaModule } from './modules/prisma/prisma.module'
-import { CoreModule } from './modules/core/core.module'
+import { EmpireCoreModule } from './modules/empire-core/empire-core.module'
 
 @Module({
   imports: [
@@ -30,7 +30,7 @@ import { CoreModule } from './modules/core/core.module'
     PrismaModule,
     PortalModule,
     EmpireModule,
-    CoreModule
+    EmpireCoreModule
   ],
   providers: [
     {

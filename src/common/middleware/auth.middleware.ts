@@ -12,9 +12,11 @@ export class AuthenticationMiddleware implements NestMiddleware {
 
   async use(req: Request, res: Response, next: NextFunction) {
     this.logger.log(AuthenticationMiddleware.name)
+    this.logger.log({ method: req.method, baseUrl: req.baseUrl, body: req.body })
 
     // REQUEST
-    const reqUrl = req.originalUrl
+    const reqUrl = req.baseUrl
+
     // console.log('🚀 -> AuthenticationMiddleware -> use -> reqUrl:', reqUrl)
 
     // THIS SHOULD BE IN TABLE OF BUSINESS & LOCATION
@@ -35,7 +37,9 @@ export class AuthenticationMiddleware implements NestMiddleware {
     }
 
     // FOR EMPIRE LOCAL ROUTE
-    if (reqUrl.includes('empire')) {
+    const reqRootUrl = reqUrl.split('/')[2]
+
+    if (reqRootUrl === 'empire') {
       if (reqUrl.includes('registration')) {
         const payload = await this.portalService.validateApiKey(apiKey)
 
@@ -59,7 +63,7 @@ export class AuthenticationMiddleware implements NestMiddleware {
     }
 
     // FOR CORE EMPIRE WEB ROUTE
-    if (reqUrl.includes('core')) {
+    if (reqRootUrl === 'empire-core') {
       const payload = await this.portalService.validateApiKey(apiKey, true)
 
       if (payload) {
@@ -67,7 +71,7 @@ export class AuthenticationMiddleware implements NestMiddleware {
         const isValid = await this.portalService.authenticateBusiness(businessCode, payload.apiKey)
 
         if (isValid) {
-          req.user = { businessCode, app: 'core' }
+          req.user = { businessCode, app: 'empire-core' }
           next()
           return
         }

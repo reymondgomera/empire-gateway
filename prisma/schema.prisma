@@ -281,3 +281,133 @@ model sysdiagrams {
 
   @@unique([principal_id, name], map: "UK_principal_name")
 }
+
+// REFERENCIAL 2 COLUMNS
+model RefBrand {
+  businessCode String   @db.NVarChar(50)
+  id           String   @id() @default(uuid())
+  code         String   @db.NVarChar(30)
+  name         String   @db.NVarChar(50)
+  default      Boolean  @db.Bit()
+  active       Boolean  @default(true) @db.Bit()
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+
+  @@unique([businessCode, code])
+  @@map("RefBrand")
+}
+
+model RefDivision {
+  businessCode String   @db.NVarChar(50)
+  id           String   @id() @default(uuid())
+  code         String   @db.NVarChar(30)
+  name         String   @db.NVarChar(50)
+  default      Boolean  @db.Bit()
+  active       Boolean  @default(true) @db.Bit()
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+
+  @@unique([businessCode, code])
+  @@map("RefDivision")
+}
+
+model RefFamily {
+  businessCode String   @db.NVarChar(50)
+  id           String   @id() @default(uuid())
+  code         String   @db.NVarChar(30)
+  name         String   @db.NVarChar(50)
+  default      Boolean  @db.Bit()
+  active       Boolean  @default(true) @db.Bit()
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+
+  @@unique([businessCode, code])
+  @@map("RefFamily")
+}
+
+model RefGenericType {
+  businessCode String   @db.NVarChar(50)
+  id           String   @id() @default(uuid())
+  code         String   @db.NVarChar(30)
+  name         String   @db.NVarChar(50)
+  default      Boolean  @db.Bit()
+  active       Boolean  @default(true) @db.Bit()
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+
+  @@unique([businessCode, code])
+  @@map("RefGenericType")
+}
+
+model RefUOM {
+  businessCode String   @db.NVarChar(50)
+  id           String   @id() @default(uuid())
+  code         String   @db.NVarChar(30)
+  name         String   @db.NVarChar(50)
+  default      Boolean  @db.Bit()
+  active       Boolean  @default(true) @db.Bit()
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+
+  @@unique([businessCode, code])
+  @@map("RefUOM")
+}
+
+model RefBank {
+  businessCode String   @db.NVarChar(50)
+  id           String   @id() @default(uuid())
+  code         String   @db.NVarChar(30)
+  name         String   @db.NVarChar(50)
+  default      Boolean  @db.Bit()
+  active       Boolean  @default(true) @db.Bit()
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+
+  @@unique([businessCode, code])
+  @@map("RefBank")
+}
+
+model RefCardType {
+  businessCode String   @db.NVarChar(50)
+  id           String   @id() @default(uuid())
+  code         String   @db.NVarChar(30)
+  name         String   @db.NVarChar(50)
+  default      Boolean  @db.Bit()
+  active       Boolean  @default(true) @db.Bit()
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+
+  @@unique([businessCode, code])
+  @@map("RefCardType")
+}
+
+model RefShippingMethod {
+  businessCode String   @db.NVarChar(50)
+  id           String   @id() @default(uuid())
+  code         String   @db.NVarChar(30)
+  name         String   @db.NVarChar(50)
+  default      Boolean  @db.Bit()
+  active       Boolean  @default(true) @db.Bit()
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+
+  @@unique([businessCode, code])
+  @@map("RefShippingMethod")
+}
+
+// REFERENCIAL MULTI COLUMNS
+model RefCategory {
+  businessCode String   @db.NVarChar(50)
+  id           String   @id() @default(uuid())
+  code         String   @db.NVarChar(30)
+  name         String   @db.NVarChar(50)
+  default      Boolean  @db.Bit()
+  active       Boolean  @default(true) @db.Bit()
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+
+  colorCode String? @db.NVarChar(50)
+
+  @@unique([businessCode, code])
+  @@map("RefCategory")
+}

@@ -1,14 +1,14 @@
 import { Controller, Get, Post, Body, Query, Headers, Delete } from '@nestjs/common'
-import { CoreService } from './core.service'
+import { EmpireCoreService } from './empire-core.service'
 
 import { Public } from '../../common/decorators'
 import { GetPortalAuth } from '../../common/decorators/get-portal-auth.decorator'
 import { PortalAuth } from '../../types'
 
-@Controller('core')
-export class CoreController {
+@Controller('empire-core')
+export class EmpireCoreController {
   prisma: any
-  constructor(private readonly coreService: CoreService) {}
+  constructor(private readonly coreService: EmpireCoreService) {}
 
   @Public()
   @Get()

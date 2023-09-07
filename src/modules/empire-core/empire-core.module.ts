@@ -1,17 +1,22 @@
 import { Module } from '@nestjs/common'
 import { HttpModule } from '@nestjs/axios'
-import { CoreService } from './core.service'
-import { CoreController } from './core.controller'
+import { EmpireCoreService } from './empire-core.service'
+import { EmpireCoreController } from './empire-core.controller'
 import { RouterModule, Routes } from '@nestjs/core'
 import { ItemModule } from './item/item.module'
+import { ReferenceModule } from './reference/reference.module'
 
 const routes: Routes = [
   {
-    path: '/core',
+    path: '/empire-core',
     children: [
       {
         path: '/item',
         module: ItemModule
+      },
+      {
+        path: '/reference',
+        module: ReferenceModule
       }
     ]
   }
@@ -24,9 +29,10 @@ const routes: Routes = [
       maxRedirects: 5
     }),
     RouterModule.register(routes),
-    ItemModule
+    ItemModule,
+    ReferenceModule
   ],
-  providers: [CoreService],
-  controllers: [CoreController]
+  providers: [EmpireCoreService],
+  controllers: [EmpireCoreController]
 })
-export class CoreModule {}
+export class EmpireCoreModule {}
