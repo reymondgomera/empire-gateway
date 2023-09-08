@@ -4,7 +4,7 @@ import { EmpireCoreService } from './empire-core.service'
 import { EmpireCoreController } from './empire-core.controller'
 import { RouterModule, Routes } from '@nestjs/core'
 import { ItemModule } from './item/item.module'
-import { ReferenceModule } from './reference/reference.module'
+import { DataCenterModule } from './data-center/data-center.module'
 
 const routes: Routes = [
   {
@@ -15,8 +15,8 @@ const routes: Routes = [
         module: ItemModule
       },
       {
-        path: '/reference',
-        module: ReferenceModule
+        path: '/data-center',
+        module: DataCenterModule
       }
     ]
   }
@@ -30,7 +30,7 @@ const routes: Routes = [
     }),
     RouterModule.register(routes),
     ItemModule,
-    ReferenceModule
+    DataCenterModule
   ],
   providers: [EmpireCoreService],
   controllers: [EmpireCoreController]

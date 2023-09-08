@@ -14,6 +14,8 @@ export class AuthenticationMiddleware implements NestMiddleware {
     this.logger.log(AuthenticationMiddleware.name)
     this.logger.log({ method: req.method, baseUrl: req.baseUrl, body: req.body })
 
+    console.log(req.query)
+
     // REQUEST
     const reqUrl = req.baseUrl
 

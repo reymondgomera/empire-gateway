@@ -3,7 +3,7 @@ import { ItemService } from './item.service'
 
 import { Public } from '../../../common/decorators'
 import { GetPortalAuth } from '../../../common/decorators/get-portal-auth.decorator'
-import { RefPrismaQueryDto, PortalAuth } from '../../../types'
+import { DataCenterPrismaQueryDto, PortalAuth } from '../../../types'
 
 @Controller()
 export class ItemController {
@@ -11,8 +11,8 @@ export class ItemController {
   constructor(private readonly itemService: ItemService) {}
 
   @Get()
-  getAll(@Query() query: RefPrismaQueryDto) {
-    return this.itemService.getAll(query)
+  getAll(@Query() query: DataCenterPrismaQueryDto, @GetPortalAuth() auth: PortalAuth) {
+    return this.itemService.getAll(query, auth)
   }
 
   @Public()

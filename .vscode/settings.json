@@ -13,5 +13,5 @@
     "titleBar.inactiveForeground": "#e7e7e799"
   },
   "peacock.color": "#215732",
-  "cSpell.words": ["apikey", "locationid"]
+  "cSpell.words": ["apikey", "DATACENTER", "locationid"]
 }

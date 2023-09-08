@@ -3,18 +3,19 @@ import { InternalServerError, UnprocessableEntity } from '../../../common/utils/
 import { Injectable } from '@nestjs/common'
 
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
-import { RefPrismaQueryDto } from 'src/types'
+import { PortalAuth, DataCenterPrismaQueryDto } from '../../../types'
 import { Prisma } from '@prisma/client'
 
 @Injectable()
 export class ItemService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getAll(query: RefPrismaQueryDto) {
+  async getAll(query: DataCenterPrismaQueryDto, auth: PortalAuth) {
     try {
-      const paginate: Prisma.MasterItemFindManyArgs = query.take && query.take ? { skip: query.skip, take: query.take } : {}
+      const refWhere: Prisma.MasterItemFindManyArgs = { where: { businessCode: auth.businessCode } }
+      const refQuery: Prisma.MasterItemFindManyArgs = query.take && query.take ? { skip: query.skip, take: query.take } : {}
 
-      const data = await this.prisma.masterItem.findMany({ ...paginate, orderBy: { code: 'asc' } })
+      const data = await this.prisma.masterItem.findMany({ ...refWhere, ...refQuery, orderBy: { code: 'asc' } })
       const totalCount = await this.prisma.masterItem.count()
 
       return { data, totalCount }
@@ -22,8 +23,8 @@ export class ItemService {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code == 'P2002') {
           throw new UnprocessableEntity({
-            error: 'Registration exist.',
-            message: 'Location code and Machine Details already registered.'
+            error: 'Item already exist.',
+            message: 'Item already exist.'
           })
         }
 

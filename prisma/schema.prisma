@@ -50,20 +50,32 @@ model Organization {
 }
 
 model Business {
-  id             String       @unique @db.NVarChar(50)
-  code           String       @unique @db.NVarChar(30)
-  name           String       @db.NVarChar(50)
-  isActive       Boolean
-  isDefault      Boolean
-  status         String       @db.NVarChar(10)
-  organizationId String       @db.NVarChar(50)
-  createdAt      DateTime     @db.DateTime
-  updatedAt      DateTime     @db.DateTime
-  bgBusinessCode String       @unique @default("") @db.NVarChar(30)
-  apiKey         String?      @db.NVarChar(Max)
-  organization   Organization @relation("OrganizationToBusiness", fields: [organizationId], references: [id], onDelete: Cascade)
-  location       Location[]   @relation("BusinessToLocation")
-  items          MasterItem[]
+  id                String              @unique @db.NVarChar(50)
+  code              String              @unique @db.NVarChar(30)
+  name              String              @db.NVarChar(50)
+  isActive          Boolean
+  isDefault         Boolean
+  status            String              @db.NVarChar(10)
+  organizationId    String              @db.NVarChar(50)
+  createdAt         DateTime            @db.DateTime
+  updatedAt         DateTime            @db.DateTime
+  bgBusinessCode    String              @unique @default("") @db.NVarChar(30)
+  apiKey            String?             @db.NVarChar(Max)
+  organization      Organization        @relation("OrganizationToBusiness", fields: [organizationId], references: [id], onDelete: Cascade)
+  location          Location[]          @relation("BusinessToLocation")
+  items             MasterItem[]
+  refBrand          RefBrand[]
+  refDivision       RefDivision[]
+  refFamily         RefFamily[]
+  refGenericType    RefGenericType[]
+  refUOM            RefUOM[]
+  refBank           RefBank[]
+  refCardType       RefCardType[]
+  refShippingMethod RefShippingMethod[]
+  refCategory       RefCategory[]
+  refPayment        RefPayment[]
+  refDiscount       RefDiscount[]
+  refTerms          RefTerms[]
 
   @@index([organizationId])
   @@map("Business")
@@ -284,7 +296,7 @@ model sysdiagrams {
 
 // REFERENCIAL 2 COLUMNS
 model RefBrand {
-  businessCode String   @db.NVarChar(50)
+  businessCode String   @db.NVarChar(30)
   id           String   @id() @default(uuid())
   code         String   @db.NVarChar(30)
   name         String   @db.NVarChar(50)
@@ -292,13 +304,15 @@ model RefBrand {
   active       Boolean  @default(true) @db.Bit()
   createdAt    DateTime @default(now())
   updatedAt    DateTime @default(now())
+
+  business Business @relation(fields: [businessCode], references: [bgBusinessCode], onUpdate: NoAction, map: "FK_RefBrand_Business")
 
   @@unique([businessCode, code])
   @@map("RefBrand")
 }
 
 model RefDivision {
-  businessCode String   @db.NVarChar(50)
+  businessCode String   @db.NVarChar(30)
   id           String   @id() @default(uuid())
   code         String   @db.NVarChar(30)
   name         String   @db.NVarChar(50)
@@ -306,13 +320,15 @@ model RefDivision {
   active       Boolean  @default(true) @db.Bit()
   createdAt    DateTime @default(now())
   updatedAt    DateTime @default(now())
+
+  business Business @relation(fields: [businessCode], references: [bgBusinessCode], onUpdate: NoAction, map: "FK_RefDivision_Business")
 
   @@unique([businessCode, code])
   @@map("RefDivision")
 }
 
 model RefFamily {
-  businessCode String   @db.NVarChar(50)
+  businessCode String   @db.NVarChar(30)
   id           String   @id() @default(uuid())
   code         String   @db.NVarChar(30)
   name         String   @db.NVarChar(50)
@@ -320,13 +336,15 @@ model RefFamily {
   active       Boolean  @default(true) @db.Bit()
   createdAt    DateTime @default(now())
   updatedAt    DateTime @default(now())
+
+  business Business @relation(fields: [businessCode], references: [bgBusinessCode], onUpdate: NoAction, map: "FK_RefFamily_Business")
 
   @@unique([businessCode, code])
   @@map("RefFamily")
 }
 
 model RefGenericType {
-  businessCode String   @db.NVarChar(50)
+  businessCode String   @db.NVarChar(30)
   id           String   @id() @default(uuid())
   code         String   @db.NVarChar(30)
   name         String   @db.NVarChar(50)
@@ -334,13 +352,15 @@ model RefGenericType {
   active       Boolean  @default(true) @db.Bit()
   createdAt    DateTime @default(now())
   updatedAt    DateTime @default(now())
+
+  business Business @relation(fields: [businessCode], references: [bgBusinessCode], onUpdate: NoAction, map: "FK_RefGenericType_Business")
 
   @@unique([businessCode, code])
   @@map("RefGenericType")
 }
 
 model RefUOM {
-  businessCode String   @db.NVarChar(50)
+  businessCode String   @db.NVarChar(30)
   id           String   @id() @default(uuid())
   code         String   @db.NVarChar(30)
   name         String   @db.NVarChar(50)
@@ -348,13 +368,15 @@ model RefUOM {
   active       Boolean  @default(true) @db.Bit()
   createdAt    DateTime @default(now())
   updatedAt    DateTime @default(now())
+
+  business Business @relation(fields: [businessCode], references: [bgBusinessCode], onUpdate: NoAction, map: "FK_RefUOM_Business")
 
   @@unique([businessCode, code])
   @@map("RefUOM")
 }
 
 model RefBank {
-  businessCode String   @db.NVarChar(50)
+  businessCode String   @db.NVarChar(30)
   id           String   @id() @default(uuid())
   code         String   @db.NVarChar(30)
   name         String   @db.NVarChar(50)
@@ -362,13 +384,15 @@ model RefBank {
   active       Boolean  @default(true) @db.Bit()
   createdAt    DateTime @default(now())
   updatedAt    DateTime @default(now())
+
+  business Business @relation(fields: [businessCode], references: [bgBusinessCode], onUpdate: NoAction, map: "FK_RefBank_Business")
 
   @@unique([businessCode, code])
   @@map("RefBank")
 }
 
 model RefCardType {
-  businessCode String   @db.NVarChar(50)
+  businessCode String   @db.NVarChar(30)
   id           String   @id() @default(uuid())
   code         String   @db.NVarChar(30)
   name         String   @db.NVarChar(50)
@@ -376,13 +400,15 @@ model RefCardType {
   active       Boolean  @default(true) @db.Bit()
   createdAt    DateTime @default(now())
   updatedAt    DateTime @default(now())
+
+  business Business @relation(fields: [businessCode], references: [bgBusinessCode], onUpdate: NoAction, map: "FK_RefCardType_Business")
 
   @@unique([businessCode, code])
   @@map("RefCardType")
 }
 
 model RefShippingMethod {
-  businessCode String   @db.NVarChar(50)
+  businessCode String   @db.NVarChar(30)
   id           String   @id() @default(uuid())
   code         String   @db.NVarChar(30)
   name         String   @db.NVarChar(50)
@@ -390,6 +416,8 @@ model RefShippingMethod {
   active       Boolean  @default(true) @db.Bit()
   createdAt    DateTime @default(now())
   updatedAt    DateTime @default(now())
+
+  business Business @relation(fields: [businessCode], references: [bgBusinessCode], onUpdate: NoAction, map: "FK_RefShippingMethod_Business")
 
   @@unique([businessCode, code])
   @@map("RefShippingMethod")
@@ -397,7 +425,7 @@ model RefShippingMethod {
 
 // REFERENCIAL MULTI COLUMNS
 model RefCategory {
-  businessCode String   @db.NVarChar(50)
+  businessCode String   @db.NVarChar(30)
   id           String   @id() @default(uuid())
   code         String   @db.NVarChar(30)
   name         String   @db.NVarChar(50)
@@ -408,6 +436,69 @@ model RefCategory {
 
   colorCode String? @db.NVarChar(50)
 
+  business Business @relation(fields: [businessCode], references: [bgBusinessCode], onUpdate: NoAction, map: "FK_RefCategory_Business")
+
   @@unique([businessCode, code])
   @@map("RefCategory")
+}
+
+model RefPayment {
+  businessCode String   @db.NVarChar(30)
+  id           String   @id() @default(uuid())
+  code         String   @db.NVarChar(30)
+  name         String   @db.NVarChar(50)
+  default      Boolean  @db.Bit()
+  active       Boolean  @default(true) @db.Bit()
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+
+  operator Int?     @default(0) @db.TinyInt()
+  hide     Boolean? @default(false) @db.Bit()
+
+  business Business @relation(fields: [businessCode], references: [bgBusinessCode], onUpdate: NoAction, map: "FK_RefPayment_Business")
+
+  @@unique([businessCode, code])
+  @@map("RefPayment")
+}
+
+model RefDiscount {
+  businessCode String   @db.NVarChar(30)
+  id           String   @id() @default(uuid())
+  code         String   @db.NVarChar(30)
+  name         String   @db.NVarChar(50)
+  default      Boolean  @db.Bit()
+  active       Boolean  @default(true) @db.Bit()
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+
+  discRate Int?     @default(0) @db.TinyInt()
+  lessTax  Boolean? @default(false) @db.Bit()
+  senior   Boolean? @default(false) @db.Bit()
+
+  promo Boolean? @default(false) @db.Bit()
+  claim Boolean? @default(false) @db.Bit()
+  hide  Boolean? @default(false) @db.Bit()
+
+  business Business @relation(fields: [businessCode], references: [bgBusinessCode], onUpdate: NoAction, map: "FK_RefDiscount_Business")
+
+  @@unique([businessCode, code])
+  @@map("RefDiscount")
+}
+
+model RefTerms {
+  businessCode String   @db.NVarChar(30)
+  id           String   @id() @default(uuid())
+  code         String   @db.NVarChar(30)
+  name         String   @db.NVarChar(50)
+  default      Boolean  @db.Bit()
+  active       Boolean  @default(true) @db.Bit()
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+
+  days Int? @default(0) @db.TinyInt()
+
+  business Business @relation(fields: [businessCode], references: [bgBusinessCode], onUpdate: NoAction, map: "FK_RefTerms_Business")
+
+  @@unique([businessCode, code])
+  @@map("RefTerms")
 }

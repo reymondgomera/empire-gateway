@@ -16,6 +16,8 @@ import { CommonAuthGuard } from './common/guards/common.guard'
 import { RequestService } from './common/request.service'
 import { PrismaModule } from './modules/prisma/prisma.module'
 import { EmpireCoreModule } from './modules/empire-core/empire-core.module'
+import { HealthController } from './health.controller'
+import { TerminusModule } from '@nestjs/terminus'
 
 @Module({
   imports: [
@@ -25,6 +27,7 @@ import { EmpireCoreModule } from './modules/empire-core/empire-core.module'
     CacheModule.register({
       ttl: 5000 // 5 seconds
     }),
+    TerminusModule.forRoot(),
     // AuthModule,
     // UserModule,
     PrismaModule,
@@ -46,7 +49,8 @@ import { EmpireCoreModule } from './modules/empire-core/empire-core.module'
       useClass: CacheInterceptor
     },
     RequestService
-  ]
+  ],
+  controllers: [HealthController]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

@@ -1,7 +1,7 @@
 import { createZodDto } from 'nestjs-zod'
 import { z } from 'nestjs-zod/z'
 
-const RefPrismaQuerySchema = z.object({
+const DataCenterPrismaQuerySchema = z.object({
   skip: z
     .preprocess((val) => Number(val), z.number())
     .default(0)
@@ -13,7 +13,7 @@ const RefPrismaQuerySchema = z.object({
   requireTotalCount: z.coerce.boolean().default(true).optional()
 })
 
-export class RefPrismaQueryDto extends createZodDto(RefPrismaQuerySchema) {}
+export class DataCenterPrismaQueryDto extends createZodDto(DataCenterPrismaQuerySchema) {}
 
 // OLD PAGINATION
 export type PaginatedResource = {

@@ -1,27 +1,35 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../../prisma/prisma.service'
 import { InternalServerError, NotFoundException, UnprocessableEntity } from '../../../common/utils/custom-error'
-import { REF_OBJECT } from '../../../constant/reference'
+import { DATACENTER_OBJECT } from '../../../constant/data-center'
 
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
-import { PortalAuth, RefDeleteDto, RefPostDto, RefPutDto, Ref2ColsSchema, RefPrismaQueryDto } from '../../../types'
+import {
+  PortalAuth,
+  DataCenterDeleteDto,
+  DataCenterPostDto,
+  DataCenterPutDto,
+  DataCenterBaseSchema,
+  DataCenterPrismaQueryDto
+} from '../../../types'
 import { Prisma } from '@prisma/client'
 
 @Injectable()
-export class ReferenceService {
+export class DataCenterService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getAll(query: RefPrismaQueryDto, modelPath: string) {
+  async getAll(query: DataCenterPrismaQueryDto, modelPath: string, auth: PortalAuth) {
     try {
-      const { model } = REF_OBJECT[modelPath]
+      const { model } = DATACENTER_OBJECT[modelPath]
 
       if (!model) {
-        throw new NotFoundException(`Model [${model}] does not exist in reference.`)
+        throw new NotFoundException(`Model [${model}] does not exist in data center.`)
       }
 
-      const paginate: Prisma.RefBrandFindManyArgs = query.take && query.take ? { skip: query.skip, take: query.take } : {}
+      const refWhere: Prisma.RefBrandFindManyArgs = { where: { businessCode: auth.businessCode } }
+      const refQuery: Prisma.RefBrandFindManyArgs = query.take && query.take ? { skip: query.skip, take: query.take } : {}
 
-      const data = await this.prisma?.[model].findMany({ ...paginate, orderBy: { updatedAt: 'desc' } })
+      const data = await this.prisma?.[model].findMany({ ...refWhere, ...refQuery, orderBy: { updatedAt: 'desc' } })
       const totalCount = await this.prisma?.[model].count()
 
       return { data, totalCount }
@@ -38,13 +46,13 @@ export class ReferenceService {
     }
   }
 
-  async create(bodyData: RefPostDto, modelPath: string, auth: PortalAuth) {
+  async create(bodyData: DataCenterPostDto, modelPath: string, auth: PortalAuth) {
     try {
-      const { model, zodSchema } = REF_OBJECT[modelPath]
-      const schema = zodSchema ? zodSchema : Ref2ColsSchema
+      const { model, zodSchema } = DATACENTER_OBJECT[modelPath]
+      const schema = zodSchema ? zodSchema : DataCenterBaseSchema
 
       if (!model) {
-        throw new NotFoundException(`Model [${model}] does not exist in reference.`)
+        throw new NotFoundException(`Model [${model}] does not exist in data center.`)
       }
 
       const { values } = bodyData
@@ -78,13 +86,13 @@ export class ReferenceService {
     }
   }
 
-  async update(bodyData: RefPutDto, modelPath: string) {
+  async update(bodyData: DataCenterPutDto, modelPath: string) {
     try {
-      const { model, zodSchema } = REF_OBJECT[modelPath]
-      const schema = zodSchema ? zodSchema : Ref2ColsSchema
+      const { model, zodSchema } = DATACENTER_OBJECT[modelPath]
+      const schema = zodSchema ? zodSchema : DataCenterBaseSchema
 
       if (!model) {
-        throw new NotFoundException(`Model [${model}] does not exist in reference.`)
+        throw new NotFoundException(`Model [${model}] does not exist in data center.`)
       }
 
       const { key, values } = bodyData
@@ -118,12 +126,12 @@ export class ReferenceService {
     }
   }
 
-  async delete(bodyData: RefDeleteDto, modelPath: string) {
+  async delete(bodyData: DataCenterDeleteDto, modelPath: string) {
     try {
-      const { model } = REF_OBJECT[modelPath]
+      const { model } = DATACENTER_OBJECT[modelPath]
 
       if (!model) {
-        throw new NotFoundException(`Model [${model}] does not exist in reference.`)
+        throw new NotFoundException(`Model [${model}] does not exist in data center.`)
       }
 
       const { key } = bodyData
