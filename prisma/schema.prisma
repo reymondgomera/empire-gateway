@@ -64,7 +64,12 @@ model Business {
   organization      Organization        @relation("OrganizationToBusiness", fields: [organizationId], references: [id], onDelete: Cascade)
   location          Location[]          @relation("BusinessToLocation")
   items             MasterItem[]
+  supplier          MasterSupplier[]
+  company           CompanyDetails[]
+  principal         Principal[]
   refBrand          RefBrand[]
+  refSupplierClass   RefSupplierClass[]
+  refSupplierGroup  RefSupplierGroup[]
   refDivision       RefDivision[]
   refFamily         RefFamily[]
   refGenericType    RefGenericType[]
@@ -152,6 +157,101 @@ model MasterItem {
   business     Business    @relation(fields: [businessCode], references: [bgBusinessCode], onUpdate: NoAction, map: "FK_MasterItem_Business")
 
   @@map("MasterItem")
+}
+
+model MasterSupplier {
+  businessCode String   @db.NVarChar(30)
+  id_no        String   @unique(map: "IDX_MasterSupplier") @db.NVarChar(50)
+  ref_cd       String   @db.NVarChar(30)
+  ref_nm       String   @db.NVarChar(100)
+  active_yn    Boolean  @db.Bit()
+  default_yn   Boolean? @db.Bit()
+  groupid_no   Int?
+  classid_no   Int?
+  trade_nm     String?  @db.NVarChar(50)
+  tin_nb       String?  @db.NVarChar(20)
+  address_tx   String?  @db.NVarChar(MAX)
+  address2_tx  String?  @db.NVarChar(MAX)
+  province_nm  String?  @db.NVarChar(100)
+  city_nm      String?  @db.NVarChar(100)
+  postal_nb    String?  @db.NVarChar(5)
+  contact_nm   String?  @db.NVarChar(100)
+  position_nm  String?  @db.NVarChar(100)
+  tel1_nb      String?  @db.NVarChar(30)
+  tel2_nb      String?  @db.NVarChar(30)
+  mobile1_nb   String?  @db.NVarChar(30)
+  mobile2_nb   String?  @db.NVarChar(30)
+  email_ad     String?  @db.NVarChar(100)
+  website_tx   String?  @db.NVarChar(100)
+  priceid_no   Int?
+  discid_no    Int?
+  tax_yn       Boolean? @db.Bit()
+  taxid_no     Int?
+  termsid_no   Int?
+  paymentid_no Int?
+  limit_am     Decimal  @db.Decimal(18, 0)
+  locid_no     Int?
+  shipid_no    Int?
+  leadtime_no  Int?
+  create_dt    String?  @db.NVarChar(30)
+  create_nm    String?  @db.NVarChar(30)
+  modi_dt      String?  @db.NVarChar(30)
+  modi_nm      String?  @db.NVarChar(30)
+  whlocid_no   Int?
+  glacctid_no  Int?
+  bankid_no    Int?
+  business     Business @relation(fields: [businessCode], references: [bgBusinessCode], onUpdate: NoAction, map: "FK_MasterSupplier_Business")
+
+  @@map("MasterSupplier")
+}
+
+model CompanyDetails {
+  businessCode String   @db.NVarChar(30)
+  id_no        String   @unique(map: "IDX_CompanyDetails") @db.NVarChar(50)
+  ref_cd       String   @db.NVarChar(30)
+  ref_nm       String?  @db.NVarChar(100)
+  address_tx   String?  @db.NVarChar(MAX)
+  address2_tx  String?  @db.NVarChar(MAX)
+  city_nm      String?  @db.NVarChar(100)
+  province_nm  String?  @db.NVarChar(100)     
+  postal_nb    String?  @db.NVarChar(5)
+  contact_nm   String?  @db.NVarChar(100)
+  position_nm  String?  @db.NVarChar(100)
+  tel1_nb      String?  @db.NVarChar(20)
+  tel2_nb      String?  @db.NVarChar(20)
+  mobile1_nb   String?  @db.NVarChar(20)
+  mobile2_nb   String?  @db.NVarChar(20)
+  email_ad     String?  @db.NVarChar(100)
+  website_tx   String?  @db.NVarChar(100)
+  taxliable_yn Boolean? @db.Bit()
+  taxid_no     Int?
+  trade_nm     String?  @db.NVarChar(100)
+  operator_nm  String?  @db.NVarChar(100)
+  acc_nb       String?  @db.NVarChar(30)
+  tin_nb       String?  @db.NVarChar(30)
+  logo_im      String?  @db.NVarChar(MAX)
+  create_dt    String?  @db.NVarChar(30)
+  create_nm    String?  @db.NVarChar(30)
+  modi_dt      String?  @db.NVarChar(30)
+  modi_nm      String?  @db.NVarChar(30)
+  oasis_cd     String?  @db.NVarChar(50)
+  business     Business @relation(fields: [businessCode], references: [bgBusinessCode], onUpdate: NoAction, map: "FK_CompanyDetails_Business")
+
+  @@map("CompanyDetails")
+}
+
+model Principal {
+  businessCode String   @db.NVarChar(30)
+  id_no       String   @unique(map: "IDX_Principal") @db.NVarChar(50)
+  ref_cd     String  @db.NVarChar(100)
+  ref_nm     String? @db.NVarChar(100)
+  default_yn Boolean @db.Bit()
+  create_nm  String? @db.NVarChar(30)
+  modi_dt    String? @db.NVarChar(30)
+  modi_nm    String? @db.NVarChar(30)
+  business     Business @relation(fields: [businessCode], references: [bgBusinessCode], onUpdate: NoAction, map: "FK_Principal_Business")
+
+  @@map("Principal")
 }
 
 model SalesDetails {
@@ -373,6 +473,38 @@ model RefUOM {
 
   @@unique([businessCode, code])
   @@map("RefUOM")
+}
+
+model RefSupplierClass {
+  businessCode String   @db.NVarChar(30)
+  id           String   @id() @default(uuid())
+  code         String   @db.NVarChar(30)
+  name         String   @db.NVarChar(50)
+  default      Boolean  @db.Bit()
+  active       Boolean  @default(true) @db.Bit()
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+
+  business Business @relation(fields: [businessCode], references: [bgBusinessCode], onUpdate: NoAction, map: "FK_RefSupplierClass_Business")
+
+  @@unique([businessCode, code])
+  @@map("RefSupplierClass")
+}
+
+model RefSupplierGroup {
+  businessCode String   @db.NVarChar(30)
+  id           String   @id() @default(uuid())
+  code         String   @db.NVarChar(30)
+  name         String   @db.NVarChar(50)
+  default      Boolean  @db.Bit()
+  active       Boolean  @default(true) @db.Bit()
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+
+  business Business @relation(fields: [businessCode], references: [bgBusinessCode], onUpdate: NoAction, map: "FK_RefSupplierGroup_Business")
+
+  @@unique([businessCode, code])
+  @@map("RefSupplierGroup")
 }
 
 model RefBank {

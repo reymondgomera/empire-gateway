@@ -12,7 +12,7 @@ export const paginateResource = async (model, query) => {
   )
 }
 
-const getFilterQuery = (query) => {
+export const getFilterQuery = (query) => {
   const filterQuery = {}
 
   if (query.hasOwnProperty('filter')) {
@@ -23,6 +23,19 @@ const getFilterQuery = (query) => {
   }
 
   return filterQuery
+}
+
+export const getHeaderFilter = (query) => {
+  const headerFilter = {}
+
+  if (query.hasOwnProperty('headerFilter')) {
+    Object.keys(query.headerFilter).forEach((key: string) => {
+      const value = query.headerFilter[key]
+      headerFilter[key] = +value ? +value : value
+    })
+  }
+
+  return headerFilter
 }
 
 const getSortQuery = (query) => {

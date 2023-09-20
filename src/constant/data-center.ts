@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client'
-import { RefCategorySchema, RefDiscountSchema, RefPaymentSchema, RefTermsSchema } from '../types'
+import {  RefCategorySchema, RefDiscountSchema, RefPaymentSchema, RefTermsSchema } from '../types'
 import { z } from 'zod'
 
 export const DATACENTER_TABLES = [
@@ -14,7 +14,9 @@ export const DATACENTER_TABLES = [
   'category',
   'payment',
   'discount',
-  'terms'
+  'terms',
+  'supplier-class',
+  'supplier-group'
 ] as const
 
 export type DataCenterTables = (typeof DATACENTER_TABLES)[number] | (string & {})
@@ -25,6 +27,8 @@ export const DATACENTER_OBJECT: Record<DataCenterTables, { model: Prisma.ModelNa
   family: { model: 'RefFamily' },
   'generic-type': { model: 'RefGenericType' },
   uom: { model: 'RefUOM' },
+  'supplier-group': { model: 'RefSupplierGroup'},
+  'supplier-class': { model: 'RefSupplierClass'},
   bank: { model: 'RefBank' },
   'card-type': { model: 'RefCardType' },
   'shipping-method': { model: 'RefShippingMethod' },

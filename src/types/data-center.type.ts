@@ -5,7 +5,7 @@ export const DataCenterBaseSchema = z.object({
   code: z.string(),
   name: z.string(),
   default: z.boolean().default(false),
-  active: z.boolean().default(true)
+  active: z.boolean().default(true),
 })
 
 export const DataCenterPostSchema = z.object({
@@ -25,10 +25,16 @@ const DataCenterDeleteSchema = z.object({
   key: z.string()
 })
 
+
 export class DataCenterDeleteDto extends createZodDto(DataCenterDeleteSchema) {}
 
 // REFERENCE & DATA CENTER SCHEMA
-export const RefCategorySchema = DataCenterBaseSchema.extend({ colorCode: z.string().optional() })
+
+export const RefCategorySchema = DataCenterBaseSchema.extend({ 
+  colorCode: z.string().optional(),
+  
+})
+
 export const RefPaymentSchema = DataCenterBaseSchema.extend({
   operator: z.number().default(0).optional(),
   hide: z.boolean().default(false).optional()

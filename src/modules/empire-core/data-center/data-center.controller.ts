@@ -19,6 +19,8 @@ export class DataCenterController {
     return this.dataCenterService.getAll(query, model, auth)
   }
 
+  
+
   @Post(dataCenterTables)
   create(@Body() bodyData: DataCenterPostDto, @GetReferenceModel() model: string, @GetPortalAuth() auth: PortalAuth) {
     return this.dataCenterService.create(bodyData, model, auth)

@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../../prisma/prisma.service'
 import { InternalServerError, NotFoundException, UnprocessableEntity } from '../../../common/utils/custom-error'
 import { DATACENTER_OBJECT } from '../../../constant/data-center'
-
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import {
   PortalAuth,
@@ -13,6 +12,7 @@ import {
   DataCenterPrismaQueryDto
 } from '../../../types'
 import { Prisma } from '@prisma/client'
+import { buildWhereClause } from '../../../common/utils/filters'
 
 @Injectable()
 export class DataCenterService {
@@ -27,9 +27,22 @@ export class DataCenterService {
       }
 
       const refWhere: Prisma.RefBrandFindManyArgs = { where: { businessCode: auth.businessCode } }
-      const refQuery: Prisma.RefBrandFindManyArgs = query.take && query.take ? { skip: query.skip, take: query.take } : {}
+      const refQuery: Prisma.RefBrandFindManyArgs =
+        query.take && query.take
+          ? {
+              skip: query.skip,
+              take: query.take,
+              ...(query.filter && {
+                where: buildWhereClause(query.filter)
+              }),
+              orderBy: query.sort?.map((sortOption) => ({
+                [sortOption.selector]: sortOption.desc ? "desc" : "asc",
+              })) || { updatedAt: "desc" },
+            }
+          : {}
 
-      const data = await this.prisma?.[model].findMany({ ...refWhere, ...refQuery, orderBy: { updatedAt: 'desc' } })
+
+      const data = await this.prisma?.[model].findMany({ ...refWhere, ...refQuery, })
       const totalCount = await this.prisma?.[model].count()
 
       return { data, totalCount }
