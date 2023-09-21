@@ -6,11 +6,13 @@ import { json, urlencoded } from 'express'
 
 import { patchNestJsSwagger } from 'nestjs-zod'
 import { AuthenticationMiddleware } from './common/middleware/auth.middleware'
+import { GlobalExceptionFilter } from './common/filters/global-exception.filters'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
   app.setGlobalPrefix('api/')
   app.useGlobalPipes(new ValidationPipe())
+  app.useGlobalFilters(new GlobalExceptionFilter())
 
   app.use(json({ limit: '50mb' }))
   app.use(urlencoded({ extended: true, limit: '50mb' }))
