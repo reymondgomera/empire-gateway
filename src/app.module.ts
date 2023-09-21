@@ -1,6 +1,6 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
-import { APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core'
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core'
 import { AtGuard } from './common/guards'
 import { CacheInterceptor } from '@nestjs/cache-manager'
 import { CacheModule } from '@nestjs/cache-manager'
@@ -18,6 +18,7 @@ import { PrismaModule } from './modules/prisma/prisma.module'
 import { EmpireCoreModule } from './modules/empire-core/empire-core.module'
 import { HealthController } from './health.controller'
 import { TerminusModule } from '@nestjs/terminus'
+import { GlobalExceptionFilter } from './common/filters/global-exception.filters'
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { TerminusModule } from '@nestjs/terminus'
     EmpireCoreModule
   ],
   providers: [
+    
     {
       provide: APP_GUARD,
       useClass: CommonAuthGuard
@@ -47,6 +49,10 @@ import { TerminusModule } from '@nestjs/terminus'
     {
       provide: APP_INTERCEPTOR,
       useClass: CacheInterceptor
+    },
+    {
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
     },
     RequestService
   ],
