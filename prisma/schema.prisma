@@ -68,7 +68,7 @@ model Business {
   company           CompanyDetails[]
   principal         Principal[]
   refBrand          RefBrand[]
-  refSupplierClass   RefSupplierClass[]
+  refSupplierClass  RefSupplierClass[]
   refSupplierGroup  RefSupplierGroup[]
   refDivision       RefDivision[]
   refFamily         RefFamily[]
@@ -213,7 +213,7 @@ model CompanyDetails {
   address_tx   String?  @db.NVarChar(MAX)
   address2_tx  String?  @db.NVarChar(MAX)
   city_nm      String?  @db.NVarChar(100)
-  province_nm  String?  @db.NVarChar(100)     
+  province_nm  String?  @db.NVarChar(100)
   postal_nb    String?  @db.NVarChar(5)
   contact_nm   String?  @db.NVarChar(100)
   position_nm  String?  @db.NVarChar(100)
@@ -242,13 +242,13 @@ model CompanyDetails {
 
 model Principal {
   businessCode String   @db.NVarChar(30)
-  id_no       String   @unique(map: "IDX_Principal") @db.NVarChar(50)
-  ref_cd     String  @db.NVarChar(100)
-  ref_nm     String? @db.NVarChar(100)
-  default_yn Boolean @db.Bit()
-  create_nm  String? @db.NVarChar(30)
-  modi_dt    String? @db.NVarChar(30)
-  modi_nm    String? @db.NVarChar(30)
+  id_no        String   @unique(map: "IDX_Principal") @db.NVarChar(50)
+  ref_cd       String   @db.NVarChar(100)
+  ref_nm       String?  @db.NVarChar(100)
+  default_yn   Boolean  @db.Bit()
+  create_nm    String?  @db.NVarChar(30)
+  modi_dt      String?  @db.NVarChar(30)
+  modi_nm      String?  @db.NVarChar(30)
   business     Business @relation(fields: [businessCode], references: [bgBusinessCode], onUpdate: NoAction, map: "FK_Principal_Business")
 
   @@map("Principal")
@@ -398,7 +398,7 @@ model sysdiagrams {
 model RefBrand {
   businessCode String   @db.NVarChar(30)
   id           String   @id() @default(uuid())
-  code         String   @db.NVarChar(30)
+  code         String   @unique @db.NVarChar(30)
   name         String   @db.NVarChar(50)
   default      Boolean  @db.Bit()
   active       Boolean  @default(true) @db.Bit()
@@ -414,7 +414,7 @@ model RefBrand {
 model RefDivision {
   businessCode String   @db.NVarChar(30)
   id           String   @id() @default(uuid())
-  code         String   @db.NVarChar(30)
+  code         String   @unique @db.NVarChar(30)
   name         String   @db.NVarChar(50)
   default      Boolean  @db.Bit()
   active       Boolean  @default(true) @db.Bit()
@@ -430,7 +430,7 @@ model RefDivision {
 model RefFamily {
   businessCode String   @db.NVarChar(30)
   id           String   @id() @default(uuid())
-  code         String   @db.NVarChar(30)
+  code         String   @unique @db.NVarChar(30)
   name         String   @db.NVarChar(50)
   default      Boolean  @db.Bit()
   active       Boolean  @default(true) @db.Bit()
@@ -446,7 +446,7 @@ model RefFamily {
 model RefGenericType {
   businessCode String   @db.NVarChar(30)
   id           String   @id() @default(uuid())
-  code         String   @db.NVarChar(30)
+  code         String   @unique @db.NVarChar(30)
   name         String   @db.NVarChar(50)
   default      Boolean  @db.Bit()
   active       Boolean  @default(true) @db.Bit()
@@ -462,7 +462,7 @@ model RefGenericType {
 model RefUOM {
   businessCode String   @db.NVarChar(30)
   id           String   @id() @default(uuid())
-  code         String   @db.NVarChar(30)
+  code         String   @unique @db.NVarChar(30)
   name         String   @db.NVarChar(50)
   default      Boolean  @db.Bit()
   active       Boolean  @default(true) @db.Bit()
@@ -478,7 +478,7 @@ model RefUOM {
 model RefSupplierClass {
   businessCode String   @db.NVarChar(30)
   id           String   @id() @default(uuid())
-  code         String   @db.NVarChar(30)
+  code         String   @unique @db.NVarChar(30)
   name         String   @db.NVarChar(50)
   default      Boolean  @db.Bit()
   active       Boolean  @default(true) @db.Bit()
@@ -494,7 +494,7 @@ model RefSupplierClass {
 model RefSupplierGroup {
   businessCode String   @db.NVarChar(30)
   id           String   @id() @default(uuid())
-  code         String   @db.NVarChar(30)
+  code         String   @unique @db.NVarChar(30)
   name         String   @db.NVarChar(50)
   default      Boolean  @db.Bit()
   active       Boolean  @default(true) @db.Bit()
@@ -510,7 +510,7 @@ model RefSupplierGroup {
 model RefBank {
   businessCode String   @db.NVarChar(30)
   id           String   @id() @default(uuid())
-  code         String   @db.NVarChar(30)
+  code         String   @unique @db.NVarChar(30)
   name         String   @db.NVarChar(50)
   default      Boolean  @db.Bit()
   active       Boolean  @default(true) @db.Bit()
@@ -526,7 +526,7 @@ model RefBank {
 model RefCardType {
   businessCode String   @db.NVarChar(30)
   id           String   @id() @default(uuid())
-  code         String   @db.NVarChar(30)
+  code         String   @unique @db.NVarChar(30)
   name         String   @db.NVarChar(50)
   default      Boolean  @db.Bit()
   active       Boolean  @default(true) @db.Bit()
@@ -542,7 +542,7 @@ model RefCardType {
 model RefShippingMethod {
   businessCode String   @db.NVarChar(30)
   id           String   @id() @default(uuid())
-  code         String   @db.NVarChar(30)
+  code         String   @unique @db.NVarChar(30)
   name         String   @db.NVarChar(50)
   default      Boolean  @db.Bit()
   active       Boolean  @default(true) @db.Bit()
@@ -559,7 +559,7 @@ model RefShippingMethod {
 model RefCategory {
   businessCode String   @db.NVarChar(30)
   id           String   @id() @default(uuid())
-  code         String   @db.NVarChar(30)
+  code         String   @unique @db.NVarChar(30)
   name         String   @db.NVarChar(50)
   default      Boolean  @db.Bit()
   active       Boolean  @default(true) @db.Bit()
@@ -577,7 +577,7 @@ model RefCategory {
 model RefPayment {
   businessCode String   @db.NVarChar(30)
   id           String   @id() @default(uuid())
-  code         String   @db.NVarChar(30)
+  code         String   @unique @db.NVarChar(30)
   name         String   @db.NVarChar(50)
   default      Boolean  @db.Bit()
   active       Boolean  @default(true) @db.Bit()
@@ -596,7 +596,7 @@ model RefPayment {
 model RefDiscount {
   businessCode String   @db.NVarChar(30)
   id           String   @id() @default(uuid())
-  code         String   @db.NVarChar(30)
+  code         String   @unique @db.NVarChar(30)
   name         String   @db.NVarChar(50)
   default      Boolean  @db.Bit()
   active       Boolean  @default(true) @db.Bit()
@@ -620,7 +620,7 @@ model RefDiscount {
 model RefTerms {
   businessCode String   @db.NVarChar(30)
   id           String   @id() @default(uuid())
-  code         String   @db.NVarChar(30)
+  code         String   @unique @db.NVarChar(30)
   name         String   @db.NVarChar(50)
   default      Boolean  @db.Bit()
   active       Boolean  @default(true) @db.Bit()
