@@ -14,6 +14,10 @@ const DataCenterPrismaQuerySchema = z.object({
     .string()
     .transform((val) => JSON.parse(val))
     .optional(),
+  group: z
+    .string()
+    .transform((val) => JSON.parse(val))
+    .optional(),
 
   sort: z
     .string()

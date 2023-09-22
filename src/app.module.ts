@@ -18,7 +18,8 @@ import { PrismaModule } from './modules/prisma/prisma.module'
 import { EmpireCoreModule } from './modules/empire-core/empire-core.module'
 import { HealthController } from './health.controller'
 import { TerminusModule } from '@nestjs/terminus'
-import { GlobalExceptionFilter } from './common/filters/global-exception.filters'
+import { LoggingInterceptor } from './common/utils/logging.interceptor'
+import { PrismaClientExceptionFilter } from './common/exception/prisma-client-exception.filter'
 
 @Module({
   imports: [
@@ -37,7 +38,14 @@ import { GlobalExceptionFilter } from './common/filters/global-exception.filters
     EmpireCoreModule
   ],
   providers: [
-    
+    {
+      provide: APP_FILTER,
+      useClass: PrismaClientExceptionFilter
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
+    },
     {
       provide: APP_GUARD,
       useClass: CommonAuthGuard
@@ -49,10 +57,6 @@ import { GlobalExceptionFilter } from './common/filters/global-exception.filters
     {
       provide: APP_INTERCEPTOR,
       useClass: CacheInterceptor
-    },
-    {
-      provide: APP_FILTER,
-      useClass: GlobalExceptionFilter,
     },
     RequestService
   ],

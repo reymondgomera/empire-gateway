@@ -1,16 +1,18 @@
-import { Controller, Get, Post, Body, Query, Delete, Put } from '@nestjs/common'
+import { Controller, Get, Post, Body, Query, Delete, Put, UseFilters } from '@nestjs/common'
 import { DataCenterService } from './data-center.service'
 
 import { GetPortalAuth } from '../../../common/decorators/get-portal-auth.decorator'
 import { DataCenterPrismaQueryDto, PortalAuth, DataCenterPutDto, DataCenterPostDto, DataCenterDeleteDto } from '../../../types'
 import { GetReferenceModel } from '../../../common/decorators/get-reference-model'
 import { DATACENTER_TABLES } from '../../../constant/data-center'
+import { PrismaClientExceptionFilter } from '../../../common/exception/prisma-client-exception.filter'
 
 const dataCenterTables = DATACENTER_TABLES.map((table) => {
   return '/' + table
 })
 
 @Controller()
+// @UseFilters(PrismaClientExceptionFilter)
 export class DataCenterController {
   constructor(private readonly dataCenterService: DataCenterService) {}
 
@@ -18,8 +20,6 @@ export class DataCenterController {
   getAll(@Query() query: DataCenterPrismaQueryDto, @GetReferenceModel() model: string, @GetPortalAuth() auth: PortalAuth) {
     return this.dataCenterService.getAll(query, model, auth)
   }
-
-  
 
   @Post(dataCenterTables)
   create(@Body() bodyData: DataCenterPostDto, @GetReferenceModel() model: string, @GetPortalAuth() auth: PortalAuth) {

@@ -25,6 +25,21 @@ export const getFilterQuery = (query) => {
   return filterQuery
 }
 
+
+export const getGroup = (query) => {
+  const groupQuery = {}
+
+  if(query.hasOwnProperty('group')) {
+    Object.keys(query.group).forEach((key: string) => {
+      const value = query.group[key]
+      groupQuery[key] = +value ? +value : value
+    })
+  }
+
+
+  return groupQuery
+}
+
 export const getHeaderFilter = (query) => {
   const headerFilter = {}
 
