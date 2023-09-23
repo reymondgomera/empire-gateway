@@ -20,6 +20,7 @@ import { HealthController } from './health.controller'
 import { TerminusModule } from '@nestjs/terminus'
 import { LoggingInterceptor } from './common/utils/logging.interceptor'
 import { PrismaClientExceptionFilter } from './common/exception/prisma-client-exception.filter'
+import { ErrorReferencesController } from './modules/empire-core/error-references/error-references.controller'
 
 @Module({
   imports: [
@@ -60,7 +61,7 @@ import { PrismaClientExceptionFilter } from './common/exception/prisma-client-ex
     },
     RequestService
   ],
-  controllers: [HealthController]
+  controllers: [HealthController], 
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

@@ -1,7 +1,10 @@
 import { Module } from '@nestjs/common'
 import { HttpModule } from '@nestjs/axios'
 import { DataCenterService } from './data-center.service'
-import { DataCenterController } from './data-center.controller'
+import { createDataCenterController } from './data-center.controller'
+import { DATACENTER_TABLES } from '../../../constant/data-center';
+
+const dataCenterControllers = DATACENTER_TABLES.map(table => createDataCenterController(table));
 
 @Module({
   imports: [
@@ -11,6 +14,6 @@ import { DataCenterController } from './data-center.controller'
     })
   ],
   providers: [DataCenterService],
-  controllers: [DataCenterController]
+  controllers: [...dataCenterControllers],
 })
 export class DataCenterModule {}

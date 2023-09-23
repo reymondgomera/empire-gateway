@@ -17,7 +17,7 @@ async function bootstrap() {
   
   patchNestJsSwagger()
 
-  const config = new DocumentBuilder().setTitle('Gateway').setDescription('Gateway Service API').setVersion('0.1').build()
+  const config = new DocumentBuilder().addBearerAuth().setTitle('Gateway').setDescription('Gateway Service API').setVersion('0.1').build()
 
   const document = SwaggerModule.createDocument(app, config)
   SwaggerModule.setup('/api/docs', app, document)

@@ -1,10 +1,11 @@
-import { ArgumentsHost, Catch, HttpStatus } from "@nestjs/common"
+import { ArgumentsHost, Catch, HttpException, HttpStatus } from "@nestjs/common"
 import { BaseExceptionFilter } from "@nestjs/core"
 import { Prisma } from "@prisma/client"
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 import { Response } from "express"
 import { Request } from "express"
 
-const errorMappings: Record<string, { status: number; message: string }> = {
+export const errorMappings: Record<string, { status: number; message: string }> = {
   P2000: { status: HttpStatus.BAD_REQUEST, message: "Input Data is too long" },
   P2001: { status: HttpStatus.NO_CONTENT, message: "Record does not exist" },
   P2002: { status: HttpStatus.CONFLICT, message: "Reference Data already exists" },
@@ -38,17 +39,23 @@ const errorMappings: Record<string, { status: number; message: string }> = {
   P2031: { status: HttpStatus.BAD_REQUEST, message: "MongoDB Replica Set Required" },
   P2033: { status: HttpStatus.BAD_REQUEST, message: "Number Exceeds 64-bit Integer" },
   P2034: { status: HttpStatus.BAD_REQUEST, message: "Transaction Failed Due to Conflict" },
+  401: { status: HttpStatus.UNAUTHORIZED, message: "Unable to process request! Please check your API Key & Data" },
+  400: { status: HttpStatus.BAD_REQUEST, message: "Unable to process request! Please check your Data" },
+  404: { status: HttpStatus.NOT_FOUND, message: "No Record Found" },
+  422: { status: HttpStatus.UNPROCESSABLE_ENTITY, message: "Unable to process request! Please check your Data" },
+  500: { status: HttpStatus.INTERNAL_SERVER_ERROR, message: "Internal Server Error" },
+  403: { status: HttpStatus.FORBIDDEN, message: "Unable to process request! Please check your API Key & Data." },
 };
 
 
 @Catch(Prisma.PrismaClientKnownRequestError)
-export class PrismaClientExceptionFilter extends BaseExceptionFilter {
+export class PrismaClientExceptionFilter  extends BaseExceptionFilter {
   catch(exception: Prisma.PrismaClientKnownRequestError, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
-    const errorCode = exception.code;
+    const errorCode = exception.code
     const errorMapping = errorMappings[errorCode];
 
     if (errorMapping) {
@@ -60,7 +67,11 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
         }, Error Code: ${errorCode.replace("P", "BG")}`,
       });
     } else {
+      exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR
       super.catch(exception, host); // Handle unknown error codes
     }
   }
 }
+
+
+// const status = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR

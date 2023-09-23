@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger'
 import { createZodDto } from 'nestjs-zod'
 import { z } from 'nestjs-zod/z'
 
@@ -13,6 +14,7 @@ export const DataCenterPostSchema = z.object({
 })
 
 export class DataCenterPostDto extends createZodDto(DataCenterPostSchema) {}
+
 
 const DataCenterPutSchema = z.object({
   key: z.string(),
